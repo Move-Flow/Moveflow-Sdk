@@ -1,0 +1,15 @@
+/node_modules/
+/build/
+/lib/
+/dist/
+.idea/*
+/cli/
+
+.DS_Store
+coverage
+*.log
+/examples/
+jenkinsfileOnProd
+/deploy/
+Dockerfile
+nginx.config
