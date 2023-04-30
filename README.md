@@ -21,13 +21,15 @@ import { SDK,TESTNET_CONFIG } from '@moveflow/sdk.js';
     
     const sdk = new SDK(TESTNET_CONFIG);
 
-    let stream = await sdk.create(from, to, 10, 1);
+    let stream = await sdk.create(from, to, 10, 1); // 创建流
 
-    let is_paused = await stream.pause(); // 暂停
+    // let status = await stream.pause(); // 暂停流
 
-    is_paused = await stream.resume(); // 继续
+    // status = await stream.resume(); // 继续流
 
-    // let 
+    await stream.close()   // 关闭流
+
+    await stream.withdraw(5); // 接收方取款
 
 
 })();
