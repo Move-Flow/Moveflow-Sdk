@@ -1,4 +1,6 @@
 export const SUI_COIN_TYPE = "0x2::sui::SUI";
+export const APTOS_COIN_TYPE = "0x2::aptos::APTOS";
+
 export const USDT_COIN_TYPE = "0x11354b097c4e0affba37574814b4f2ba439f57d1a28fc86d51d76c3bc5ad7751::usdt::USDT";
 export const WBTC_COIN_TYPE = "0x11354b097c4e0affba37574814b4f2ba439f57d1a28fc86d51d76c3bc5ad7751::wbtc::WBTC";
 

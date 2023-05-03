@@ -1,51 +1,100 @@
 //import {  Network  } from '@mysten/sui.js';
 
 export class NetworkConfiguration {
-    constructor(
-      public name: string,
-      public fullNodeUrl: string,
-      public packageObjectId: string,
-      // public globalId: string,
-      // public poolsDynamicId: string,
-      // public faucetPackageId:string,
-      // public faucetObjectId:string,
-      // public isMainNet = false
-    ) {}
-  }
-  
-  export const MAINNET_CONFIG = new NetworkConfiguration(
-    'mainnet',
-    'https://fullnode.mainnet.sui.io:443',
-    '0x1f0d4d3ca884a1a6958fe5ba9dc6d8003d9f7d76',
-    // '0x92131c160fa0f1b95190a3a7cbfa32d0149ab00f',
-    // '0x19465f7b8008aa1443269808840856a3c8b2c119',
-    // "",
-    // ""
-  );
-  
-  export const TESTNET_CONFIG = new NetworkConfiguration(
-    'testnet', // name
-     'https://rpc-testnet.suiscan.xyz:443', // fullNodeUrl
-    '0xe4dfb7dca0d54f5cc51ed39d847251417666b7c1', // packageObjectId
-    // '0x5faf9ee713fa866766ac448f2b634074c23851e3', // globalId
-    // '0x5a9772c7c3346dd1834873c07b0e2076a38d5d8e', // poolsDynamicId
-    // "0x0a3af85362a35154ce5f513bada2d38887d8a66f", // faucetPackageId
-    // "0x41ed95838a6e03d172b4d55f3cdebe66cd1a3de2" // faucetObjectId
-  );
+  constructor(
+    public chain: string,           // sui / aptos, 
+    public network: string,         // testnet / mainnet / devnet 
+    public fullNodeUrl: string,
+    public faucetUrl: string,
+    public incomingStreamObjectId: string,
+    public outgoingStreamObjectId: string,
+    public globalConfigObjectId: string,
+    public packageObjectId: string,
+  ) { }
+}
 
-  export const DEVNET_CONFIG = new NetworkConfiguration(
-    'devnet',
-     'https://fullnode.devnet.sui.io:443',
-    '0x1c189ff62eaf0b243e53963ca5dc4642fed3ceec',
-    // '0x917d0dcb8c9b25989771be680a7349a508a8d172', 
-    // '0xb73dc92e615e06983277e74713b88e7fa67fbf56',
-    // '0x7263b90384c15e1bffe5757d9eaa0235264bd294',
-    // '0xef4f724d57678dd4d8b8ceeb8eb937044c1f009f'
-  );
+export const DEVNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'devnet',                                                             // name
+  "https://fullnode.devnet.sui.io/",                                    // fullNodeUrl
+  "",                                                                   // faucetUrl
+  "0x5d6997de74fc6bc3c347c2805d794b60cec34db0d7179a545e27ea60e06bbbb4", // incoming stream object id
+  "0xaf20e6f2588130598a9c0df8573c1177c2724f05bdfb39e2d67a15e320fde4c8", // outgoing stream object id
+  "0xb75536c79c771ed02096954d1ed21cec1d92d5b833cd2571b42b5435c53f9a07", // global config object id
+  "0x21383c9973e51348db3eaecdb95034eca8171bd00f1e3de4ab85ea4f2d697587"  // package object id
+)
 
-  export const CONFIGS = {
-    mainnet: MAINNET_CONFIG,
-    testnet: TESTNET_CONFIG,
-    devnet: DEVNET_CONFIG,
-  };
-  
+export const TESTNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'testnet',                                                            // name
+  'https://fullnode.testnet.sui.io/',                                   // fullNodeUrl
+  'https://faucet.testnet.aptoslabs.com',                               // faucetUrl
+  "0xc692b2acc82596239bdec03005ed2ae9815e05f7ec32536c1169ba5328e15675", // incoming stream object id
+  "0xd59b7671f4d2547680e3489bc664259bc4ecd78670de40b897bcde297eca5e99", // outgoing stream object id
+  "0x2217bc9922316837220dfedbd1068533ee2dfd1a3073c16c76fb376e23b17d7e", // global config object id
+  "0x21383c9973e51348db3eaecdb95034eca8171bd00f1e3de4ab85ea4f2d697587", // package object id
+);
+
+export const MAINNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'mainnet',                                                            // name
+  'https://fullnode.mainnet.aptoslabs.com/v1',                          // fullNodeUrl
+  '',                                                                   // faucetUrl
+  "",                                                                   // incoming stream object id
+  "",                                                                   // outgoing stream object id
+  "",                                                                   // global config object id
+  ""                                                                    // package object id
+);
+
+
+
+
+export const APT_DEVNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'devnet',                                                             // name
+  "https://fullnode.devnet.sui.io/",                                    // fullNodeUrl
+  "",                                                                   // faucetUrl
+  "0x5d6997de74fc6bc3c347c2805d794b60cec34db0d7179a545e27ea60e06bbbb4", // incoming stream object id
+  "0xaf20e6f2588130598a9c0df8573c1177c2724f05bdfb39e2d67a15e320fde4c8", // outgoing stream object id
+  "0xb75536c79c771ed02096954d1ed21cec1d92d5b833cd2571b42b5435c53f9a07", // global config object id
+  "0x21383c9973e51348db3eaecdb95034eca8171bd00f1e3de4ab85ea4f2d697587"  // package object id
+)
+
+export const APT_TESTNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'testnet',                                                            // name
+  'https://fullnode.testnet.sui.io/',                                   // fullNodeUrl
+  'https://faucet.testnet.aptoslabs.com',                               // faucetUrl
+  "0xc692b2acc82596239bdec03005ed2ae9815e05f7ec32536c1169ba5328e15675", // incoming stream object id
+  "0xd59b7671f4d2547680e3489bc664259bc4ecd78670de40b897bcde297eca5e99", // outgoing stream object id
+  "0x2217bc9922316837220dfedbd1068533ee2dfd1a3073c16c76fb376e23b17d7e", // global config object id
+  "0x21383c9973e51348db3eaecdb95034eca8171bd00f1e3de4ab85ea4f2d697587", // package object id
+);
+
+export const APT_MAINNET_CONFIG = new NetworkConfiguration(
+  'sui',
+  'mainnet',                                                            // name
+  'https://fullnode.mainnet.aptoslabs.com/v1',                          // fullNodeUrl
+  '',                                                                   // faucetUrl
+  "",                                                                   // incoming stream object id
+  "",                                                                   // outgoing stream object id
+  "",                                                                   // global config object id
+  ""                                                                    // package object id
+);
+
+
+export const CONFIGS = {
+  sui_testnet: TESTNET_CONFIG,
+  sui_devnet: DEVNET_CONFIG,
+  sui_mainnet: MAINNET_CONFIG,
+
+  aptos_mainnet: APT_MAINNET_CONFIG,
+  aptos_testnet: APT_TESTNET_CONFIG,
+  aptos_devnet: APT_DEVNET_CONFIG,
+};
+
+//
+
+
+
+

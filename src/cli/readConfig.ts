@@ -9,7 +9,7 @@ export const readConfig = (program: Command) => {
     const mnemonics = "future please eager illness dog pitch horror quit use access mom endless";
     const keypair = Ed25519Keypair.deriveKeypair(mnemonics);
     
-    const suiAmmSdk = new SDK(CONFIGS.testnet);
+    const suiAmmSdk = new SDK(CONFIGS.sui_testnet);
     const rawSigner = new RawSigner(keypair, suiAmmSdk.jsonRpcProvider);
     
     return { suiAmmSdk, rawSigner };

@@ -16,10 +16,10 @@ export class CoinListModule implements IModule {
 
   constructor(sdk: SDK) {
     this._sdk = sdk;
-    const networkName = sdk.networkOptions.name;
+    const network = sdk.networkOptions.network;
+    const chain = sdk.networkOptions.chain;
 
-    this.coinList = networkName === 'devnet' ? REQUESTS_DEVNET : (networkName === 'testnet' ? REQUESTS_TESTNET : REQUESTS_MAINNET);
-
+    this.coinList = (chain == 'sui' && network === 'devnet') ? REQUESTS_DEVNET : (network === 'testnet' ? REQUESTS_TESTNET : REQUESTS_MAINNET);
     
     this.fullnameToCoinInfo = {};
     this.symbolToCoinInfo = {};

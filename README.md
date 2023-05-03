@@ -17,20 +17,17 @@ yarn test
 
 ```ts
 import { SDK,TESTNET_CONFIG } from '@moveflow/sdk.js';
-(async function main() {
     
-    const sdk = new SDK(TESTNET_CONFIG);
+const sdk = new SDK(TESTNET_CONFIG);
 
-    let stream = await sdk.create(from, to, 10, 1); // 创建流
+let stream = await sdk.create(from, to, 10, 1); // 创建流
 
-    // let status = await stream.pause(); // 暂停流
+await stream.pause(); 
 
-    // status = await stream.resume(); // 继续流
+await stream.resume();
 
-    await stream.close()   // 关闭流
+await stream.close();
 
-    await stream.withdraw(5); // 接收方取款
+await stream.withdraw(5);
 
-
-})();
 ```
