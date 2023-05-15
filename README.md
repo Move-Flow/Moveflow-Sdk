@@ -18,16 +18,33 @@ yarn test
 ```ts
 import { SDK,TESTNET_CONFIG } from '@moveflow/sdk.js';
     
-const sdk = new SDK(TESTNET_CONFIG);
+const { stream, client } = new SDK(CONFIGS.aptos_testnet, alice, alice);
 
-let stream = await sdk.create(from, to, 10, 1); // 创建流
 
-await stream.pause(); 
+ await stream.create(
+        'aptos-test', 
+        'remark', 
+        bob.address.toString(), 
+        1, 
+        Date.now().toString(), 
+        Date.now().toString(),  
+        10, 
+        false, 
+        false 
+    );
 
-await stream.resume();
 
-await stream.close();
+// query stream
+let stream_list = await stream.query(address, 'outgoing');
 
-await stream.withdraw(5);
+let stream_id = "1"
+
+await stream.close(stream_id);
+
+await stream.pause(stream_id); 
+
+await stream.resume(stream_id);
+
+await stream.withdraw(streamId);
 
 ```
