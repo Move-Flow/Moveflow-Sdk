@@ -11,7 +11,7 @@ export const walletCmd = async (program: Command) => {
         const address = addHexPrefix(await rawSigner.getAddress())
         console.log(`address: ${address}`);
 
-        const suiBalance = await suiAmmSdk.Coin.getCoinBalance(address,SUI_COIN_TYPE);
+        const suiBalance = await suiAmmSdk.coin.getCoinBalance(address,SUI_COIN_TYPE);
         console.log(`address: ${address} sui balance: ${  suiBalance }`);
         
     };
