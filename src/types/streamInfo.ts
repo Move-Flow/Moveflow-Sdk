@@ -1,4 +1,4 @@
-import {StreamStatus} from "./streamStatus";
+import {StreamStatus} from "./streamStatus"
 
 
 interface StreamInfo {
