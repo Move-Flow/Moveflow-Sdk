@@ -47,6 +47,11 @@ export type createPayload = {
   recipientModifiable?: boolean
 }
 
+export type withdrawPayload = {
+  id: string | number,
+  coinType?: string
+}
+
 export type pausePayload = {
   id: string | number,
   coinType?: string
@@ -204,6 +209,25 @@ export class StreamModule implements IModule {
     }
   }
 
+  withdraw(input: withdrawPayload): Payload {
+    const {
+      id,
+      coinType,
+    } = input
+
+    const { modules } = this.sdk.networkOptions
+    const functionName = composeType(modules.StreamModule, 'withdraw')
+    const args = [id.toString()]
+    const typeArguments = [coinType ?? AptosCoin]
+
+    return {
+      type: 'entry_function_payload',
+      function: functionName,
+      type_arguments: typeArguments,
+      arguments: args,
+    }
+  }
+
   extend(input: extendPayload): Payload {
 
     const {
@@ -233,6 +257,120 @@ export class StreamModule implements IModule {
       type_arguments: typeArguments,
       arguments: args,
     }
+  }
+
+  async getStreamById(streamId: string): Promise<StreamInfo> {
+
+    const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
+
+    const address = this.sdk.networkOptions.modules.DeployerAddress;
+    const aptosConfigType = 'stream::GlobalConfig';
+    const aptosStreamType = 'stream::StreamInfo';
+
+    const resources = await this._sdk.client.getAccountResources(address);
+    const resGlConf = resources.find((r) => r.type.includes(aptosConfigType))!;
+    // @ts-ignore
+    const inStreamHandle = resGlConf.data.streams_store.inner.handle!;
+  
+    const tbReqStreamInd = {
+      key_type: "u64",
+      value_type: `${address}::${aptosStreamType}`,
+      key: streamId,
+    };
+    // console.debug("AptAdapter getIncomingStreams inStreamHandle, tbReqStreamInd", streamId, inStreamHandle, tbReqStreamInd);
+    const stream = await this._sdk.client.getTableItem(inStreamHandle, tbReqStreamInd);
+
+    const status = this.getStatus(stream, currTime);
+
+    const withdrawableAmount = this.calculateWithdrawableAmount(
+      Number(stream.start_time) * 1000,
+      Number(stream.stop_time) * 1000,
+      Number(currTime),
+      Number(stream.pauseInfo.pause_at) * 1000,
+      Number(stream.last_withdraw_time) * 1000,
+      Number(stream.pauseInfo.acc_paused_time) * 1000,
+      Number(stream.interval),
+      Number(stream.rate_per_interval),
+      status,
+    );
+    
+    const streamedAmount = this.calculateStreamedAmount(
+      Number(this.displayAmount(new BigNumber(stream.withdrawn_amount))),
+      Number(stream.start_time) * 1000,
+      Number(stream.stop_time) * 1000,
+      Number(currTime),
+      Number(stream.pauseInfo.pause_at) * 1000,
+      Number(stream.last_withdraw_time) * 1000,
+      Number(stream.pauseInfo.acc_paused_time) * 1000,
+      Number(stream.interval),
+      Number(stream.rate_per_interval),
+      status,
+    );
+
+    let streamInfo = {
+      name: stream.name,
+      status: status,
+      createTime: (Number(stream.create_at) * 1000).toString(),
+      depositAmount: this.displayAmount(new BigNumber(stream.deposit_amount)),
+      streamId: stream.id,
+      interval: stream.interval,
+      lastWithdrawTime: (Number(stream.last_withdraw_time) * 1000).toString(),
+      ratePerInterval: stream.rate_per_interval,
+      recipientId: stream.recipient,
+      remainingAmount: this.displayAmount(new BigNumber(stream.remaining_amount)),
+      senderId: stream.sender,
+      startTime: (Number(stream.start_time) * 1000).toString(),
+      stopTime: (Number(stream.stop_time) * 1000).toString(),
+      withdrawnAmount: this.displayAmount(new BigNumber(stream.withdrawn_amount)),
+      pauseInfo: {
+        accPausedTime: (Number(stream.pauseInfo.acc_paused_time)).toString(),
+        pauseAt: (Number(stream.pauseInfo.pause_at) * 1000).toString(),
+        paused: stream.pauseInfo.paused,
+      },
+      streamedAmount: streamedAmount.toString(),
+      withdrawableAmount: this.displayAmount(new BigNumber(withdrawableAmount)).toString(),
+      escrowAddress: stream.escrow_address,
+    };
+
+    return streamInfo;
+  }
+
+  async withdrawable(streamId: string): Promise<number> {
+
+    const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
+
+    const address = this.sdk.networkOptions.modules.DeployerAddress;
+    const aptosConfigType = 'stream::GlobalConfig';
+    const aptosStreamType = 'stream::StreamInfo';
+    
+    const resources = await this._sdk.client.getAccountResources(address);
+    const resGlConf = resources.find((r) => r.type.includes(aptosConfigType))!;
+    // @ts-ignore
+    const inStreamHandle = resGlConf.data.streams_store.inner.handle!;
+  
+    const tbReqStreamInd = {
+      key_type: "u64",
+      value_type: `${address}::${aptosStreamType}`,
+      key: streamId,
+    };
+    // console.debug("AptAdapter getIncomingStreams inStreamHandle, tbReqStreamInd", streamId, inStreamHandle, tbReqStreamInd);
+    const stream = await this._sdk.client.getTableItem(inStreamHandle, tbReqStreamInd);
+
+    const status = this.getStatus(stream, currTime);
+
+    const withdrawableAmount = this.calculateWithdrawableAmount(
+      Number(stream.start_time) * 1000,
+      Number(stream.stop_time) * 1000,
+      Number(currTime),
+      Number(stream.pauseInfo.pause_at) * 1000,
+      Number(stream.last_withdraw_time) * 1000,
+      Number(stream.pauseInfo.acc_paused_time) * 1000,
+      Number(stream.interval),
+      Number(stream.rate_per_interval),
+      status,
+    );
+
+    return withdrawableAmount;
   }
   
   async getIncomingStreams(recvAddress: string): Promise<StreamInfo[]> {
