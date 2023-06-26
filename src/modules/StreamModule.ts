@@ -47,6 +47,23 @@ export type createPayload = {
   recipientModifiable?: boolean
 }
 
+export type batchCreatePayload = {
+  
+  recipientAddrs: string[],
+  depositAmounts: number[],
+  startTime: string,
+  stopTime: string,
+  
+  name?: string,
+  remark?: string,
+
+  interval?: number,
+  coinType?: string,
+  canPause?: boolean,
+  closeable?: boolean,
+  recipientModifiable?: boolean
+}
+
 export type withdrawPayload = {
   id: string | number,
   coinType?: string
@@ -135,6 +152,53 @@ export class StreamModule implements IModule {
       
       recipientAddr,
       (depositAmount * 10 ** 8).toString(),
+      startTime.toString(),
+      stopTime.toString(),
+
+      Math.floor((interval ?? 0) / 1000).toString(),
+      (canPause ?? true).toString(),
+      (closeable ?? true).toString(),
+      (recipientModifiable ?? true).toString(),
+    ]
+
+    return {
+      type: 'entry_function_payload',
+      function: functionName,
+      type_arguments: typeArguments,
+      arguments: args,
+    }
+
+  }
+
+  batchCreate(input: batchCreatePayload): Payload {
+
+    const {
+      name,
+      remark,
+      recipientAddrs,
+      depositAmounts,
+      startTime,
+      stopTime,
+      interval,
+      coinType,
+      canPause,
+      closeable,
+      recipientModifiable
+    } = input
+
+    const { modules } = this.sdk.networkOptions
+    const functionName = composeType(modules.StreamModule, 'batchCreateV3')
+
+    const typeArguments = [coinType ?? AptosCoin]
+
+    let newDepositAmounts = depositAmounts.map(value=>(value * 10 ** 8).toString());
+
+    const args = [
+      name || '',
+      remark || '',
+      
+      recipientAddrs,
+      newDepositAmounts,
       startTime.toString(),
       stopTime.toString(),
 

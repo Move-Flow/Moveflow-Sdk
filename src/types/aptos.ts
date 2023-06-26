@@ -64,7 +64,7 @@ export type EntryFunctionPayload = {
   type: 'entry_function_payload'
   function: string
   type_arguments: string[]
-  arguments: string[]
+  arguments: any[]
 }
 
 export type Payload = EntryFunctionPayload
