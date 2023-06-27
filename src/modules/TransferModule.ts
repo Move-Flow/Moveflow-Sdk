@@ -12,6 +12,7 @@ export type batchTransferPayload = {
   
   recipientAddrs: string[],
   depositAmounts: number[],
+  isFeeFromSender: boolean,
   coinType?: string
 }
 
@@ -33,11 +34,12 @@ export class TransferModule implements IModule {
     const {
       recipientAddrs,
       depositAmounts,
+      isFeeFromSender,
       coinType
     } = input
 
     const { modules } = this.sdk.networkOptions
-    const functionName = composeType(modules.StreamModule, 'batchTransferV2')
+    const functionName = composeType(modules.StreamModule, 'batchTransferV3')
 
     const typeArguments = [coinType ?? AptosCoin]
 
@@ -46,6 +48,7 @@ export class TransferModule implements IModule {
     const args = [
       recipientAddrs,
       newDepositAmounts,
+      isFeeFromSender
     ]
 
     return {
