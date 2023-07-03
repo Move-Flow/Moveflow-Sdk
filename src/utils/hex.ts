@@ -1,38 +1,32 @@
-const HEX_REGEXP = /^[-+]?[0-9A-Fa-f]+\.?[0-9A-Fa-f]*?$/;
+const HEX_REGEXP = /^[-+]?[0-9A-Fa-f]+\.?[0-9A-Fa-f]*?$/
 
 export function addHexPrefix(hex: string): string {
-  return !hex.startsWith('0x') ? '0x' + hex : hex;
+  return !hex.startsWith('0x') ? '0x' + hex : hex
 }
 
 export function shortString(str: string, start = 4, end = 4) {
-  const slen = Math.max(start, 1);
-  const elen = Math.max(end, 1);
-
-  return str.slice(0, slen + 2) + ' ... ' + str.slice(-elen);
+  const slen = Math.max(start, 1)
+  const elen = Math.max(end, 1)
+  return str.slice(0, slen + 2) + ' ... ' + str.slice(-elen)
 }
 
 export function shortAddress(address: string, start = 4, end = 4) {
-  return shortString(addHexPrefix(address), start, end);
+  return shortString(addHexPrefix(address), start, end)
 }
 
 export function checkAddress(
   address: string,
   options: { leadingZero: boolean } = { leadingZero: true }
 ): boolean {
-  if (typeof address !== 'string') {
-    return false;
-  }
-  let str = address;
-
+  let str = address
   if (options.leadingZero) {
     if (!address.startsWith('0x')) {
-      return false;
+      return false
     } else {
-      str = str.substring(2);
+      str = str.substring(2)
     }
   }
-
-  return HEX_REGEXP.test(str);
+  return HEX_REGEXP.test(str)
 }
 
 /**
@@ -64,5 +58,14 @@ export function toBuffer(v: any): Buffer {
 }
 
 export function bufferToHex(buffer: Buffer): string {
-  return addHexPrefix(toBuffer(buffer).toString('hex'));
+  return addHexPrefix(toBuffer(buffer).toString('hex'))
+}
+
+export function hexToString(str: string) {
+  // remove additional 0x prefix
+  if (str.startsWith('0x')) {
+    str = str.substring(2)
+  }
+  const buf = Buffer.from(str, 'hex')
+  return buf.toString('utf8')
 }

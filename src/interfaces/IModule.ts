@@ -1,5 +1,5 @@
-import { SDK } from "../sdk/sdk";
+import { SDK } from '../sdk'
 
 export interface IModule {
-  readonly sdk: SDK;
+  readonly sdk: SDK
 }

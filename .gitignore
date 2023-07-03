@@ -2,14 +2,9 @@
 /build/
 /lib/
 /dist/
+/docs/
 .idea/*
-/cli/
 
 .DS_Store
 coverage
 *.log
-/examples/
-jenkinsfileOnProd
-/deploy/
-Dockerfile
-nginx.config
