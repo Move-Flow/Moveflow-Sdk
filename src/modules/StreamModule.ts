@@ -303,10 +303,10 @@ export class StreamModule implements IModule {
     ]
 
     const typeArguments = [coinType ?? AptosCoin]
-
+    const address = this.sdk.networkOptions.modules.DeployerAddress
     return {
       type: 'entry_function_payload',
-      function: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::stream::extend',
+      function: address + '::stream::extend',
       type_arguments: typeArguments,
       arguments: args,
     }
@@ -446,7 +446,7 @@ export class StreamModule implements IModule {
         limit: 1000,
       }
     );
-    // console.debug("AptAdapter getIncomingStreams events", eventsAll);
+    console.debug("AptAdapter getIncomingStreams events", eventsAll);
 
     const eventsRecv = eventsAll.filter(event => event.data.recipient! === recvAddress);
     if (eventsRecv.length === 0) return [];

@@ -1,11 +1,8 @@
 import { AptosClient } from 'aptos'
-// import { SwapModule } from './modules/SwapModule'
-// import { MiscModule } from './modules/MiscModule'
-// import { RouteModule } from './modules/RouteModule'
-// import { RouteV2Module } from './modules/RouteV2Module'
-// import { MasterChefModule } from './modules/MasterChefModule'
 import { ResourcesModule } from './modules/ResourcesModule'
 import { StreamModule } from './modules/StreamModule'
+import { TransferModule } from './modules/TransferModule'
+
 import { AptosResourceType } from './types/aptos'
 
 export type SdkOptions = {
@@ -38,6 +35,8 @@ export class SDK {
  
   protected _resources: ResourcesModule
   protected _stream: StreamModule
+  protected _drop: TransferModule
+
   protected _networkOptions: SdkOptions['networkOptions']
  
   get resources() {
@@ -46,6 +45,10 @@ export class SDK {
 
   get stream() {
     return this._stream
+  }
+
+  get drop() {
+    return this._drop
   }
 
   get client() {
@@ -113,5 +116,7 @@ export class SDK {
     this._resources = new ResourcesModule(this)
 
     this._stream = new StreamModule(this)
+
+    this._drop = new TransferModule(this)
   }
 }
