@@ -17,7 +17,30 @@ const rpc = https://testnet.aptoslabs.com
 const sdk = new SDK(rpc, NetworkType.Testnet)
 ```
 
-### submit tx
+### submit Airdrop tx
+
+```javascript
+    const batchCreate = async () => {
+        const start_time = Math.floor(Date.now() / 1000).toString();
+        const stop_time = Math.floor(Date.now() / 1000 + 60 * 60 * 24).toString();
+
+        const payload = sdk.drop.batchCreate({
+            recipientAddrs: [
+                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
+                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
+            ],
+            depositAmounts: [0.1, 0.2],
+            startTime: start_time,
+            stopTime: stop_time,
+            name: 'batch_create_0x2',
+            remark: 'batch_create_0x2',
+            interval: 1000,
+        });
+        const txid = await SignAndSubmitTransaction(payload);
+    }
+```
+
+### submit Stream tx
 
 1.  create a stream
 
@@ -66,10 +89,12 @@ const txid = await SignAndSubmitTransaction(payload)
 ```
 
 4. close a stream 
+
 ```
-const payload = sdk.stream.close({ id: 29 })
-const txid = await SignAndSubmitTransaction(payload)
+    const payload = sdk.stream.close({ id: 29 })
+    const txid = await SignAndSubmitTransaction(payload)
 ````
+
 
 5. extend a stream
 
@@ -84,8 +109,8 @@ const payload = sdk.stream.extend({
 })
 
 const txid = await SignAndSubmitTransaction(payload)
-```
 
+```
 
 ### query streams 
 
