@@ -1570,10 +1570,10 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@moveflow/sdk.js@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@moveflow/sdk.js/-/sdk.js-1.0.2.tgz#f70a3c2b5d0bd0498674a6834585e6506298235c"
-  integrity sha512-ci0b+3K7haA/Hdxv1pBweqVgWjBYfGjzvYch3SZ5VnnHQYTAMzq+q0kEwJAOtnKsZPru0gmJHE5sVKx8PjiDjQ==
+"@moveflow/sdk.js@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@moveflow/sdk.js/-/sdk.js-1.0.4.tgz#d1b4a176c19fd517bd32359e2175cae8ef7dc1aa"
+  integrity sha512-EQgW3F8/J/ABBXrykP/R1a2CfFnNU3jlEuy99q7mTvIllMaNFqUE4+97/D+QGZqnJMgusOeVnvr0Ff00HGUvkw==
   dependencies:
     aptos "^1.4.0"
     axios "^1.2.0"

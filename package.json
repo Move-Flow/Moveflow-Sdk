@@ -1,13 +1,11 @@
 {
   "name": "@moveflow/sdk.js",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "SDK for use any functions of Moveflow",
   "repository": "https://github.com/move-flow/sdk.js",
   "license": "GPL-3.0-or-later",
   "keywords": [
     "moveflow",
-    "defi",
-    "swap",
     "aptos",
     "v1",
     "sdk"

@@ -106,19 +106,9 @@ export class StreamModule implements IModule {
     this._sdk = sdk
   }
 
-  async query({
-    // coinX,
-    // coinY,
-    // amount,
-    // fixedCoin,
-  }: createParams): Promise<any> {
-    // amount = d(amount)
+  async query(): Promise<any> {
 
     const { modules } = this.sdk.networkOptions
-
-    // const lpType = composeLP(modules.Scripts, coinX, coinY)
-    // const lp = await this.sdk.resources.fetchAccountResource<SwapPoolResource>(modules.ResourceAccountAddress, lpType)
- 
 
     return {
       address: modules.StreamModule
@@ -171,7 +161,6 @@ export class StreamModule implements IModule {
   }
 
   batchCreate(input: batchCreatePayload): Payload {
-
     const {
       name,
       remark,

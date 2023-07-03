@@ -9,7 +9,7 @@ import {
 } from '../utils/contract'
 
 export type batchTransferPayload = {
-  
+
   recipientAddrs: string[],
   depositAmounts: number[],
   isFeeFromSender: boolean,
@@ -30,7 +30,6 @@ export class TransferModule implements IModule {
   }
 
   batchCreate(input: batchTransferPayload): Payload {
-
     const {
       recipientAddrs,
       depositAmounts,
@@ -43,22 +42,19 @@ export class TransferModule implements IModule {
 
     const typeArguments = [coinType ?? AptosCoin]
 
-    let newDepositAmounts = depositAmounts.map(value=>(value * 10 ** 8).toString());
+    let newDepositAmounts = depositAmounts.map(value => (value * 10 ** 8).toString());
 
     const args = [
       recipientAddrs,
       newDepositAmounts,
       isFeeFromSender
     ]
-
     return {
       type: 'entry_function_payload',
       function: functionName,
       type_arguments: typeArguments,
       arguments: args,
     }
-
   }
-
 }
 
