@@ -11,7 +11,23 @@ describe('Transfer Module', () => {
 
     const { batchcall } = new SDK(NetworkType.Testnet)
     test('batchTransfer', async () => {
-        const output = batchcall.batchTransfer({
+        let output = batchcall.batchTransfer({
+            recipientAddrs: [
+                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
+                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
+            ],
+            depositAmounts: [
+                0.0001,
+                0.0002
+            ],
+        })
+
+        console.log("output:", output)
+        expect(1).toBe(1)
+    })
+
+    test('verify', async () => {
+        let output = await batchcall.verify({
             recipientAddrs: [
                 '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
                 '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'

@@ -1,4 +1,4 @@
-import { AptosClient } from 'aptos'
+import { AptosClient, CoinClient } from 'aptos'
 import { ResourcesModule } from './modules/ResourcesModule'
 import { StreamModule } from './modules/StreamModule'
 import { TransferModule } from './modules/TransferModule'
@@ -27,7 +27,7 @@ export enum NetworkType {
 
 export class SDK {
   protected _client: AptosClient
- 
+  protected _coin: CoinClient
   protected _resources: ResourcesModule
   protected _stream: StreamModule
   protected _batchcall: TransferModule
@@ -48,6 +48,10 @@ export class SDK {
 
   get client() {
     return this._client
+  }
+  
+  get coin() {
+    return this._coin
   }
 
   get networkOptions() {
@@ -95,7 +99,8 @@ export class SDK {
 
     this._networkOptions = options.networkOptions
     this._client = new AptosClient(options.nodeUrl)
-   
+    this._coin = new CoinClient(this._client)
+
     this._resources = new ResourcesModule(this)
 
     this._stream = new StreamModule(this)

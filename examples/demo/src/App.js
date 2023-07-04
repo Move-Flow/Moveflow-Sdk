@@ -39,16 +39,16 @@ const SignAndSubmitTransaction = async (transaction) => {
 function App() {
 
   const batchTransfer = async () => {
-    
+
+    const list = [
+      { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: "0.5" },
+      { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: "0.5" },
+    ]
+
     const payload = sdk.batchcall.batchTransfer({
-      recipientAddrs: [
-        '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
-        '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
-      ],
-      depositAmounts: [
-        0.001,
-        0.002
-      ],
+      isIngoreUnregisterRecipient: true,
+      recipientAddrs: list.map(item => item.recipient),
+      depositAmounts: list.map(item => item.amount),
     });
 
     const txid = await SignAndSubmitTransaction(payload);

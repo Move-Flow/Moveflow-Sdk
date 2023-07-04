@@ -2,12 +2,14 @@ import { SDK } from '../sdk'
 import { IModule } from '../interfaces/IModule'
 import { Payload } from '../types/aptos'
 import { composeType } from '../utils/contract'
+// import { AptosClient } from "aptos";
 
 export type batchTransferPayload = {
   recipientAddrs: string[],
   depositAmounts: number[],
   isFeeFromSender?: boolean,
-  coinType?: string
+  coinType?: string,
+  isIngoreUnregisterRecipient?: boolean,
 }
 
 const AptosCoin = '0x1::aptos_coin::AptosCoin'
@@ -23,14 +25,44 @@ export class TransferModule implements IModule {
     this._sdk = sdk
   }
 
+  async verify(input: batchTransferPayload): Promise<{ success: boolean; message?: string }> {
+
+    const { recipientAddrs, depositAmounts } = input
+    if (recipientAddrs.length !== depositAmounts.length) {
+      throw new Error('recipientAddrs.length !== depositAmounts.length')
+    }
+    const is_registered = async (recipient: string, coin_type="0x1::aptos_coin::AptosCoin") => {
+      const req = await fetch('https://fullnode.testnet.aptoslabs.com/v1/view', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          "function": "0x1::coin::is_account_registered",
+          "type_arguments": [coin_type],
+          "arguments": [recipient]
+        })
+      });
+      let res = await req.json();
+      return res;
+    }
+    for(let i = 0; i < recipientAddrs.length; i++) {
+      let res = await is_registered(recipientAddrs[i]);
+      if (!res) {
+        return { success: false, message: `recipient ${recipientAddrs[i]} is not registered` }
+      }
+    }
+    let success = true
+    return { success }
+  }
+
   batchTransfer(input: batchTransferPayload): Payload {
 
-    const { recipientAddrs, depositAmounts, isFeeFromSender, coinType } = input
-    console.log("recipientAddrs:", recipientAddrs)
-    
+    const { recipientAddrs, depositAmounts, isFeeFromSender, coinType, isIngoreUnregisterRecipient } = input
+
     const { modules } = this.sdk.networkOptions
 
-    const functionName = composeType(modules.TransferModule, 'batchTransferV3')
+    const functionName = composeType(modules.TransferModule, 'batchTransferV4')
 
     const typeArguments = [coinType ?? AptosCoin]
 
@@ -40,6 +72,7 @@ export class TransferModule implements IModule {
       recipientAddrs,
       newDepositAmounts,
       (isFeeFromSender ?? true).toString(),
+      (isIngoreUnregisterRecipient ?? false).toString(),
     ]
     return {
       type: 'entry_function_payload',
@@ -48,5 +81,6 @@ export class TransferModule implements IModule {
       arguments: args,
     }
   }
+
 }
 
