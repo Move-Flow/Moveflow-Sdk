@@ -19,6 +19,7 @@ const { batchcall } = new SDK(NetworkType.Testnet)
 Because tokens of type CoinType may be transferred to non-existing accounts, 
 users need to first create a recipient account and register to be able to receive CoinType before transferring tokens
 
+
 The parameters that need to be:
 
 * recipientAddrs: Receiver address for transferring tokens
