@@ -6,7 +6,7 @@ const CoinsMapping: { [key: string]: string } = {
 }
 
 describe('Stream Module', () => {
-    const sdk = new SDK('https://fullnode.testnet.aptoslabs.com/v1', NetworkType.Testnet)
+    const sdk = new SDK(NetworkType.Testnet)
 
     test('create', async () => {
 

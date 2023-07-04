@@ -41,20 +41,16 @@ const SignAndSubmitTransaction = async (transaction) => {
 function App() {
 
   const batchCreate = async () => {
-    const start_time = Math.floor(Date.now() / 1000).toString();
-    const stop_time = Math.floor(Date.now() / 1000 + 60 * 60 * 24).toString();
-
-    const payload = sdk.drop.batchCreate({
+    
+    const payload = sdk.batchcall.batchTransfer({
       recipientAddrs: [
         '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
         '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
       ],
-      depositAmounts: [0.1, 0.2],
-      startTime: start_time,
-      stopTime: stop_time,
-      name: 'batch_create_0x2',
-      remark: 'batch_create_0x2',
-      interval: 1000,
+      depositAmounts: [
+        0.1,
+        0.2
+      ],
     });
 
     const txid = await SignAndSubmitTransaction(payload);

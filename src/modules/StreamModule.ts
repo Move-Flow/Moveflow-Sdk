@@ -6,7 +6,6 @@ import {
   Payload,
 } from '../types/aptos'
 
-// import { BigNumber } from '../types/common'
 import BigNumber from 'bignumber.js';
 import StreamInfo from '../types/streamInfo'
 import {StreamStatus} from "../types/streamStatus";

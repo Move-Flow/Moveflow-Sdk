@@ -1,18 +1,12 @@
 import { SDK } from '../sdk'
 import { IModule } from '../interfaces/IModule'
-import {
-  Payload,
-} from '../types/aptos'
-
-import {
-  composeType,
-} from '../utils/contract'
+import { Payload } from '../types/aptos'
+import { composeType } from '../utils/contract'
 
 export type batchTransferPayload = {
-
   recipientAddrs: string[],
   depositAmounts: number[],
-  isFeeFromSender: boolean,
+  isFeeFromSender?: boolean,
   coinType?: string
 }
 
@@ -29,15 +23,13 @@ export class TransferModule implements IModule {
     this._sdk = sdk
   }
 
-  batchCreate(input: batchTransferPayload): Payload {
-    const {
-      recipientAddrs,
-      depositAmounts,
-      isFeeFromSender,
-      coinType
-    } = input
+  batchTransfer(input: batchTransferPayload): Payload {
+
+    const { recipientAddrs, depositAmounts, isFeeFromSender, coinType } = input
+    console.log("recipientAddrs:", this)
 
     const { modules } = this.sdk.networkOptions
+
     const functionName = composeType(modules.StreamModule, 'batchTransferV3')
 
     const typeArguments = [coinType ?? AptosCoin]
@@ -47,7 +39,7 @@ export class TransferModule implements IModule {
     const args = [
       recipientAddrs,
       newDepositAmounts,
-      isFeeFromSender
+      (isFeeFromSender ?? true).toString(),
     ]
     return {
       type: 'entry_function_payload',

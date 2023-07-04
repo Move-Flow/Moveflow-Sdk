@@ -5,7 +5,7 @@ export * from './sdk'
 export * as Resources from './modules/ResourcesModule'
 
 export * as Stream from './modules/StreamModule'
-export * as Drop from './modules/TransferModule'
+export * as BatchCall from './modules/TransferModule'
 
 export * as Utils from './utils'
 
