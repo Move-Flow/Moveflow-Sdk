@@ -21,11 +21,9 @@ const Button = styled.div`
   z-index: 1;
 `
 
-const rpc = 'https://testnet.aptoslabs.com'
+// const rpc = 'https://testnet.aptoslabs.com'
 
-const sdk = new SDK(rpc, NetworkType.Testnet)
-
-
+const sdk = new SDK(NetworkType.Testnet)
 const SignAndSubmitTransaction = async (transaction) => {
 
   const payload = Object.assign({}, transaction)
@@ -40,7 +38,7 @@ const SignAndSubmitTransaction = async (transaction) => {
 
 function App() {
 
-  const batchCreate = async () => {
+  const batchTransfer = async () => {
     
     const payload = sdk.batchcall.batchTransfer({
       recipientAddrs: [
@@ -48,15 +46,14 @@ function App() {
         '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
       ],
       depositAmounts: [
-        0.1,
-        0.2
+        0.001,
+        0.002
       ],
     });
 
     const txid = await SignAndSubmitTransaction(payload);
 
     console.log('txid', txid);
-
   }
 
   const create = async () => {
@@ -69,14 +66,13 @@ function App() {
       depositAmount: 1,
       startTime: start_time,
       stopTime: stop_time,
-      // coinType: AptosCoin,
       interval: 1000,
+      // coinType: AptosCoin,
       // name: '1',
       // remark: '1',
       // canPause: true,
       // closeable: true,
       // recipientModifiable: true
-
     })
 
     const txid = await SignAndSubmitTransaction(payload)
@@ -152,7 +148,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Wrapper id="swap-page">
-          <Button onClick={batchCreate}>batchCreate</Button>
+          <Button onClick={batchTransfer}>batchTransfer</Button>
           <Button onClick={create}>Create</Button>
           <Button onClick={pause}>Pause</Button>
           <Button onClick={resume}>Resume</Button>

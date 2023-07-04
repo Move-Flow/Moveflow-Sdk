@@ -1,6 +1,6 @@
 {
   "name": "@moveflow/sdk.js",
-  "version": "1.1.1",
+  "version": "1.1.5",
   "description": "SDK for use any functions of Moveflow",
   "repository": "https://github.com/move-flow/sdk.js",
   "license": "GPL-3.0-or-later",
@@ -22,7 +22,8 @@
     "ts-node": "ts-node",
     "docs": "typedoc --entryPoints src/main.ts",
     "build": "tsc -p tsconfig.json",
-    "build-all": "yarn clean && yarn build"
+    "build-all": "yarn clean && yarn build",
+    "pub": "yarn build-all && npm publish"
   },
   "devDependencies": {
     "@types/jest": "^29.2.4",

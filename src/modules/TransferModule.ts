@@ -26,11 +26,11 @@ export class TransferModule implements IModule {
   batchTransfer(input: batchTransferPayload): Payload {
 
     const { recipientAddrs, depositAmounts, isFeeFromSender, coinType } = input
-    console.log("recipientAddrs:", this)
-
+    console.log("recipientAddrs:", recipientAddrs)
+    
     const { modules } = this.sdk.networkOptions
 
-    const functionName = composeType(modules.StreamModule, 'batchTransferV3')
+    const functionName = composeType(modules.TransferModule, 'batchTransferV3')
 
     const typeArguments = [coinType ?? AptosCoin]
 

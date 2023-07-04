@@ -15,6 +15,7 @@ export type SdkOptions = {
       ResourceAccountAddress: AptosResourceType
       DeployerAddress: AptosResourceType
       StreamModule: AptosResourceType
+      TransferModule: AptosResourceType
     } & Record<string, AptosResourceType>
   }
 }
@@ -67,6 +68,7 @@ export class SDK {
         ResourceAccountAddress: '0x796900ebe1a1a54ff9e932f19c548f5c1af5c6e7d34965857ac2f7b1d1ab2cbf',
         DeployerAddress: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207',
         StreamModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::stream',
+        TransferModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::Transfer',
       },
     }
     const testnetOptions = {
@@ -77,6 +79,7 @@ export class SDK {
         DeployerAddress: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207',
         ResourceAccountAddress: '0x796900ebe1a1a54ff9e932f19c548f5c1af5c6e7d34965857ac2f7b1d1ab2cbf',
         StreamModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::stream',
+        TransferModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::Transfer',
       },
     }
     let networkOptions = mainnetOptions  // default network
@@ -86,7 +89,7 @@ export class SDK {
 
     nodeUrl = nodeUrl || (networkType == NetworkType.Mainnet
           ? 'https://fullnode.mainnet.aptoslabs.com/v1' 
-          : 'https://fullnode.testnet.aptoslabs.com/v1');
+          : 'https://testnet.aptoslabs.com');
 
     const options = { nodeUrl, networkOptions: networkOptions }
 

@@ -6,15 +6,10 @@ Create a project using this example:
 yarn add @moveflow/sdk.js
 ```
 
-You can start editing the page by modifying `src/App.tsx`. The page auto-updates as you edit the file.
-
 ### use sdk
 
-Deploy a copy of your application to IPFS using the following command:
- 
 ```
-const rpc = https://testnet.aptoslabs.com
-const sdk = new SDK(rpc, NetworkType.Testnet)
+const sdk = new SDK(NetworkType.Testnet)
 ``` 
 
 
