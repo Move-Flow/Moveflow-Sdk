@@ -12,6 +12,11 @@ export type batchTransferPayload = {
   isIngoreUnregisterRecipient?: boolean,
 }
 
+export type CheckPayload = {
+  recipient: string,
+  passed: boolean,
+}
+
 const AptosCoin = '0x1::aptos_coin::AptosCoin'
 
 export class TransferModule implements IModule {
@@ -25,13 +30,9 @@ export class TransferModule implements IModule {
     this._sdk = sdk
   }
 
-  async verify(input: batchTransferPayload): Promise<{ success: boolean; message?: string }> {
+  async checkRegister(recipientAddrs: string[]): Promise<CheckPayload[]> {
 
-    const { recipientAddrs, depositAmounts } = input
-    if (recipientAddrs.length !== depositAmounts.length) {
-      throw new Error('recipientAddrs.length !== depositAmounts.length')
-    }
-    const is_registered = async (recipient: string, coin_type="0x1::aptos_coin::AptosCoin") => {
+    const check = async (recipient: string, coin_type="0x1::aptos_coin::AptosCoin") => {
       const req = await fetch('https://fullnode.testnet.aptoslabs.com/v1/view', {
         method: 'POST',
         headers: {
@@ -44,16 +45,17 @@ export class TransferModule implements IModule {
         })
       });
       let res = await req.json();
-      return res;
+      return res[0];
     }
+    let list: CheckPayload[] = [];
     for(let i = 0; i < recipientAddrs.length; i++) {
-      let res = await is_registered(recipientAddrs[i]);
-      if (!res) {
-        return { success: false, message: `recipient ${recipientAddrs[i]} is not registered` }
-      }
+      let passed = await check(recipientAddrs[i]);
+      list.push({
+        recipient: recipientAddrs[i],
+        passed: passed
+      })
     }
-    let success = true
-    return { success }
+    return list
   }
 
   batchTransfer(input: batchTransferPayload): Payload {
@@ -81,6 +83,5 @@ export class TransferModule implements IModule {
       arguments: args,
     }
   }
-
 }
 

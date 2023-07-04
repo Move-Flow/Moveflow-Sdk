@@ -25,6 +25,7 @@ The parameters that need to be:
 * recipientAddrs: Receiver address for transferring tokens
 * depositAmounts: Amount of transferred tokens
 * coinType: The currency of the transfer token, the default is APT
+* isIngoreUnregisterRecipient: Whether to ignore unregistered receiver addresses, the default is true
 
 ```javascript
 export type batchTransferPayload = {
@@ -37,16 +38,16 @@ export type batchTransferPayload = {
 2. For example, airdrop Aptos tokens to two accounts:
 
 ```javascript
-const payload = sdk.batchcall.batchTransfer({
-    recipientAddrs: [
-        '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
-        '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
-    ],
-    depositAmounts: [
-        0.001,
-        0.002
-    ],
-});
+    
+    const list = [
+      { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: "0.5" },
+      { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: "0.5" },
+    ]
+
+    const payload = sdk.batchcall.batchTransfer({
+      recipientAddrs: list.map(item => item.recipient),
+      depositAmounts: list.map(item => item.amount),
+    });
 
 const txid = await SignAndSubmitTransaction(payload);
 
