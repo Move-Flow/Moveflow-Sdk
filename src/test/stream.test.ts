@@ -1,12 +1,12 @@
-import SDK, { NetworkType } from '../main'
-
+import SDK from '../main'
+import { Network } from 'aptos'
 const CoinsMapping: { [key: string]: string } = {
     APTOS: '0x1::aptos_coin::AptosCoin',
     BTC: '0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T',
 }
 
 describe('Stream Module', () => {
-    const sdk = new SDK(NetworkType.Testnet)
+    const sdk = new SDK(Network.TESTNET)
 
     test('create', async () => {
 
@@ -27,7 +27,8 @@ describe('Stream Module', () => {
             recipientModifiable: true,
         })
 
-        console.log("output:", output)
+        // console.log("output:", output)
+        expect(output).toBeDefined()
 
     })
 
@@ -50,9 +51,9 @@ describe('Stream Module', () => {
             recipientModifiable: true,
         })
 
-        console.log("output:", output)
+        // console.log("output:", output)
 
-        expect(1).toBe(1)
+        expect(output).toBeDefined()
 
     })
 })

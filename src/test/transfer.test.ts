@@ -1,36 +1,84 @@
-import SDK, { NetworkType } from '../main'
+import SDK from '../main'
+import { signAndSubmitTx, waitForTx, balanceOf } from '../utils'
+import { AptosAccount, Network } from "aptos";
+ 
+const mock_account = () => {
+    let mnemonic = ''
+    const alice = AptosAccount.fromDerivePath("m/44'/637'/0'/0'/0'", mnemonic);
+    const addr = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
+    const addr1 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
+    const addr2 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
+    const addr3 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
+    return [alice, addr, addr1, addr2, addr3]
+}
 
-// const CoinsMapping: { [key: string]: string } = {
-//     APTOS: '0x1::aptos_coin::AptosCoin',
-//     USDT_MOCK: '0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T',
-// }
-// const coinType = CoinsMapping.APTOS;
 
-const list = [
-    { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: 0.5 },
-    { recipient: "0x21e1b39cc598cc1c9f858585e303d36bc8b5451b580b83c4686be8fbe19", amount: 0.5 },
-]
+const list = mock_account().map(item => {
+    return {
+        recipient: item.address().hex(),
+        amount: 1
+    }
+})
+
+// { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: 0.5 },
+// { recipient: "0x21e1b39cc598cc1c9f858585e303d36bc8b5451b580b83c4686be8fbe19", amount: 0.5 },
 
 describe('Transfer Module', () => {
 
-    const { batchcall } = new SDK(NetworkType.Testnet)
+    beforeAll(async () => {
+        const [alice, bob] = mock_account()
 
-    test('batchTransfer', async () => {
+        console.log('alice:', alice.address().hex())
+        console.log('bob:', bob.address().hex())
+    })
+    beforeEach(async () => {
+    })
+    afterAll(async () => {
+    })
+    afterEach(async () => {
+    })
+
+    const { batchcall } = new SDK(Network.TESTNET)
+
+    it('batchTransfer', async () => {
+
         const output = batchcall.batchTransfer({
             recipientAddrs: list.map(item => item.recipient),
             depositAmounts: list.map(item => item.amount),
         });
-
-        console.log("output:", output)
-        expect(1).toBe(1)
+        expect(output).toBeDefined()
     })
 
-    test('checkRegister', async () => {
-
+    it('checkRegister', async () => {
         let recipients = list.map(item => item.recipient)
         let checked = await batchcall.checkRegister(recipients)
+        let passed = checked.filter(item => item.passed)
+        console.log('checked:', checked)
+        console.log('check passed length:', passed.length)
+        console.log('checked total length:', checked.length)
 
-        console.log("output:", checked)
-        expect(1).toBe(1)
+        expect(checked.length).toBe(recipients.length)
+    })
+
+    it('batchTransfer sign and submit tx', async () => {
+
+        const payload = batchcall.batchTransfer({
+            recipientAddrs: list.map(item => item.recipient),
+            depositAmounts: list.map(item => item.amount),
+        });
+
+        const [alice] = mock_account()
+
+        let balance = await balanceOf()
+        console.log('pre transfer balance:', balance.toString())
+        
+        const txnHash = await signAndSubmitTx(alice, payload)
+
+        await waitForTx(txnHash);
+
+        console.log('pendingTxHash:', txnHash)
+
+        balance = await balanceOf()
+        console.log('has transfered balance:', balance.toString())
     })
 })

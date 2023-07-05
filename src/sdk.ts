@@ -1,4 +1,4 @@
-import { AptosClient, CoinClient } from 'aptos'
+import { AptosClient, CoinClient, Provider, Network } from 'aptos'
 import { ResourcesModule } from './modules/ResourcesModule'
 import { StreamModule } from './modules/StreamModule'
 import { TransferModule } from './modules/TransferModule'
@@ -20,17 +20,13 @@ export type SdkOptions = {
   }
 }
 
-export enum NetworkType {
-  Mainnet,
-  Testnet,
-}
-
 export class SDK {
   protected _client: AptosClient
   protected _coin: CoinClient
   protected _resources: ResourcesModule
   protected _stream: StreamModule
   protected _batchcall: TransferModule
+  protected _provider: Provider
 
   protected _networkOptions: SdkOptions['networkOptions']
  
@@ -58,12 +54,16 @@ export class SDK {
     return this._networkOptions
   }
 
+  get provider() {
+    return this._provider
+  }
+
   /**
    * SDK constructor
    * @param nodeUrl string
-   * @param networkType? NetworkType
+   * @param Network? Network
    */
-  constructor(networkType?: NetworkType, nodeUrl?: string) {
+  constructor(network?: Network, nodeUrl?: string) {
     const mainnetOptions = {
       nativeCoin: '0x1::aptos_coin::AptosCoin',
       modules: {
@@ -88,10 +88,10 @@ export class SDK {
     }
     let networkOptions = mainnetOptions  // default network
     
-    if (networkType == NetworkType.Mainnet) networkOptions = mainnetOptions
-    if (networkType == NetworkType.Testnet) networkOptions = testnetOptions
+    if (network == Network.MAINNET) networkOptions = mainnetOptions
+    if (network == Network.TESTNET) networkOptions = testnetOptions
 
-    nodeUrl = nodeUrl || (networkType == NetworkType.Mainnet
+    nodeUrl = nodeUrl || (network == Network.MAINNET
           ? 'https://fullnode.mainnet.aptoslabs.com/v1' 
           : 'https://testnet.aptoslabs.com');
 
@@ -106,5 +106,7 @@ export class SDK {
     this._stream = new StreamModule(this)
 
     this._batchcall = new TransferModule(this)
+
+    this._provider = new Provider(network || Network.TESTNET)
   }
 }

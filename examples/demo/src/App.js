@@ -1,5 +1,5 @@
 import './App.css'
-import SDK, { NetworkType } from '@moveflow/sdk.js'
+import SDK, { Network } from '@moveflow/sdk.js'
 
 import styled from 'styled-components/macro'
 const AptosCoin = '0x1::aptos_coin::AptosCoin'
@@ -23,7 +23,7 @@ const Button = styled.div`
 
 // const rpc = 'https://testnet.aptoslabs.com'
 
-const sdk = new SDK(NetworkType.Testnet)
+const sdk = new SDK(Network.TESTNET)
 const SignAndSubmitTransaction = async (transaction) => {
 
   const payload = Object.assign({}, transaction)

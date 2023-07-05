@@ -9,7 +9,7 @@ yarn add @moveflow/sdk.js
 ### use sdk
 
 ```
-const sdk = new SDK(NetworkType.Testnet)
+const sdk = new SDK(Network.TESTNET)
 ``` 
 
 

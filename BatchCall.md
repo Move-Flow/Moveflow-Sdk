@@ -9,7 +9,7 @@ yarn add @moveflow/sdk.js
 ### Use Sdk in your code
 
 ```
-const { batchcall } = new SDK(NetworkType.Testnet)
+const { batchcall } = new SDK(Network.TESTNET)
 ```
 
 ### sdk method
