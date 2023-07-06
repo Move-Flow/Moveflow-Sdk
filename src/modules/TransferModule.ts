@@ -44,7 +44,6 @@ export class TransferModule implements IModule {
           arguments: [recipient],
       };
       const result = await this.sdk.provider.view(payload);
-      console.log("result:", result[0])
       return Boolean(result[0] as any);
     }
 

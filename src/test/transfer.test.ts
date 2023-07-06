@@ -1,42 +1,33 @@
 import SDK from '../main'
-import { signAndSubmitTx, waitForTx, balanceOf } from '../utils'
+import { signAndSubmitTx, waitForTx, balanceOf, delay } from '../utils'
 import { AptosAccount, Network } from "aptos";
- 
-const mock_account = () => {
-    let mnemonic = ''
-    const alice = AptosAccount.fromDerivePath("m/44'/637'/0'/0'/0'", mnemonic);
-    const addr = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
-    const addr1 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
-    const addr2 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
-    const addr3 = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
-    return [alice, addr, addr1, addr2, addr3]
+
+let mnemonic = 'remain exercise lecture shuffle length dial vapor steel gather away better exit'
+const alice = AptosAccount.fromDerivePath("m/44'/637'/0'/0'/0'", mnemonic);
+
+const mock_account = (): string[] => {
+
+    // const addr = AptosAccount.fromDerivePath("m/44'/637'/1'/0'/0'", mnemonic);
+    // const addr1 = AptosAccount.fromDerivePath("m/44'/637'/2'/0'/0'", mnemonic);
+    // const addr2 = AptosAccount.fromDerivePath("m/44'/637'/3'/0'/0'", mnemonic);
+    // const addr3 = AptosAccount.fromDerivePath("m/44'/637'/4'/0'/0'", mnemonic);
+    return [
+        "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", 
+        "0x3a38a2b5fb1125077bc9e3cec2095b39a48075bebf6d387ec0c36569f34f174a", 
+        '0x21e1b39cc598cc1c9f858585e303d36bc8b5451b580b83c4686be8fbe19f597f', 
+        '0xbf590eec0b12668ec85966d489fba0eb4789f1bad03cc6896c95ca2f1422cbf1', 
+        "0x642ef020f8c6999dc45d693db8c0179ee38630ed8b5e626284f83d761907a335"
+    ]
 }
 
 
-const list = mock_account().map(item => {
+const list = mock_account().map(recipient => {
     return {
-        recipient: item.address().hex(),
-        amount: 1
+        recipient, amount: 1
     }
 })
 
-// { recipient: "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180", amount: 0.5 },
-// { recipient: "0x21e1b39cc598cc1c9f858585e303d36bc8b5451b580b83c4686be8fbe19", amount: 0.5 },
-
 describe('Transfer Module', () => {
-
-    beforeAll(async () => {
-        const [alice, bob] = mock_account()
-
-        console.log('alice:', alice.address().hex())
-        console.log('bob:', bob.address().hex())
-    })
-    beforeEach(async () => {
-    })
-    afterAll(async () => {
-    })
-    afterEach(async () => {
-    })
 
     const { batchcall } = new SDK(Network.TESTNET)
 
@@ -62,23 +53,24 @@ describe('Transfer Module', () => {
 
     it('batchTransfer sign and submit tx', async () => {
 
+        let recipients = list.map(item => item.recipient)
+
         const payload = batchcall.batchTransfer({
-            recipientAddrs: list.map(item => item.recipient),
+            recipientAddrs: recipients,
             depositAmounts: list.map(item => item.amount),
         });
+        // const mock_coin = '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180::mock_coin::MockCoin'
 
-        const [alice] = mock_account()
-
-        let balance = await balanceOf()
-        console.log('pre transfer balance:', balance.toString())
+        let balances = await balanceOf(recipients)
+        console.log('pre transfer balance:', JSON.stringify(balances.map(m=>m.amount)))
         
         const txnHash = await signAndSubmitTx(alice, payload)
 
         await waitForTx(txnHash);
 
-        console.log('pendingTxHash:', txnHash)
+        await delay(3000)
 
-        balance = await balanceOf()
-        console.log('has transfered balance:', balance.toString())
+        balances = await balanceOf(recipients)
+        console.log('has transfered balance:', JSON.stringify(balances.map(m=>m.amount)))
     })
 })
