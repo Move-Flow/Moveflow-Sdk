@@ -53,13 +53,14 @@ describe('Transfer Module', () => {
 
     it('batchTransfer sign and submit tx', async () => {
 
+        // const mock_coin = '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180::mock_coin::MockCoin'
+
         let recipients = list.map(item => item.recipient)
 
         const payload = batchcall.batchTransfer({
             recipientAddrs: recipients,
             depositAmounts: list.map(item => item.amount),
         });
-        // const mock_coin = '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180::mock_coin::MockCoin'
 
         let balances = await balanceOf(recipients)
         console.log('pre transfer balance:', JSON.stringify(balances.map(m=>m.amount)))
