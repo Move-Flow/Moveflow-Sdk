@@ -4,7 +4,7 @@ import { AptosAccount, Network } from "aptos";
 
 import {
     // signAndSubmitTx, waitForTx, 
-    delay 
+    // delay 
 } from '../utils'
 
 let mnemonic = 'remain exercise lecture shuffle length dial vapor steel gather away better exit'
@@ -71,7 +71,7 @@ describe('Subscription Module', () => {
         const recipient = '0x49958931304d1f946374d8b1f7c0ced6ee6b18110361b0604d0f55a0345b3a74'
         const output = await subscription.getSubscriptionsByRecipient(recipient);
 
-        await delay(3000)
+        // await delay(3000)
 
         expect(output).toBeDefined()
 
