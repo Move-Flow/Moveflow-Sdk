@@ -1,5 +1,5 @@
 {
-  "name": "@moveflow/sdk.js",
+  "name": "@moveflow/sdk-aptos",
   "version": "1.1.8",
   "description": "SDK for use any functions of Moveflow",
   "repository": "https://github.com/move-flow/sdk.js",
