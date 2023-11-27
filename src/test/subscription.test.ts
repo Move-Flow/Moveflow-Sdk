@@ -21,6 +21,7 @@ describe('Subscription Module', () => {
             deposit_amount: 1,
             start_time: Math.floor(Date.now() / 1000 ).toString(),
             stop_time: Math.floor(Date.now() / 1000  + 60 * 60 * 24 * 30).toString(),
+            coin_type: "",
             rate_type: 'day',
             amount_type: 'fixed'
         }

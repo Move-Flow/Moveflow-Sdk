@@ -156,7 +156,7 @@ export class SubscriptionModule implements IModule {
 
     const _type_arguments = [coin_type ?? AptosCoin]
 
-    const _function = `${modules.SubscriptionModule}::subscription::deposit`;
+    const _function = `${modules.SubscriptionModule}::subscription::withdraw`;
 
     const _arguments = [
       withdraw_amount,
@@ -202,41 +202,41 @@ export class SubscriptionModule implements IModule {
     return subscriptionInfo;
   }
 
-  async withdrawable(subscriptionId: string): Promise<number> {
+  // async withdrawable(subscriptionId: string): Promise<number> {
 
-    const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
+  //   const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
 
-    const address = this.sdk.networkOptions.modules.DeployerAddress;
+  //   const address = this.sdk.networkOptions.modules.DeployerAddress;
 
-    const resources = await this._sdk.client.getAccountResources(address);
-    const resGlConf = resources.find((r) => r.type.includes(aptosConfigType))!;
-    // @ts-ignore
-    const inSubscriptionHandle = resGlConf.data.subscriptions_store.inner.handle!;
+  //   const resources = await this._sdk.client.getAccountResources(address);
+  //   const resGlConf = resources.find((r) => r.type.includes(aptosConfigType))!;
+  //   // @ts-ignore
+  //   const inSubscriptionHandle = resGlConf.data.subscriptions_store.inner.handle!;
 
-    const tbReqSubscriptionInd = {
-      key_type: "u64",
-      value_type: `${address}::${aptosSubscriptionType}`,
-      key: subscriptionId,
-    };
+  //   const tbReqSubscriptionInd = {
+  //     key_type: "u64",
+  //     value_type: `${address}::${aptosSubscriptionType}`,
+  //     key: subscriptionId,
+  //   };
 
-    const subscription = await this._sdk.client.getTableItem(inSubscriptionHandle, tbReqSubscriptionInd);
+  //   const subscription = await this._sdk.client.getTableItem(inSubscriptionHandle, tbReqSubscriptionInd);
 
-    const status = this. _getSubscriptionStatus(subscription, currTime);
+  //   const status = this. _getSubscriptionStatus(subscription, currTime);
 
-    const withdrawableAmount = this._calculateWithdrawableAmount(
-      Number(subscription.start_time) * 1000,
-      Number(subscription.stop_time) * 1000,
-      Number(currTime),
-      Number(subscription.pauseInfo.pause_at) * 1000,
-      Number(subscription.last_withdraw_time) * 1000,
-      Number(subscription.pauseInfo.acc_paused_time) * 1000,
-      Number(subscription.interval),
-      Number(subscription.rate_per_interval),
-      status,
-    );
+  //   const withdrawableAmount = this._calculateWithdrawableAmount(
+  //     Number(subscription.start_time) * 1000,
+  //     Number(subscription.stop_time) * 1000,
+  //     Number(currTime),
+  //     Number(subscription.pauseInfo.pause_at) * 1000,
+  //     Number(subscription.last_withdraw_time) * 1000,
+  //     Number(subscription.pauseInfo.acc_paused_time) * 1000,
+  //     Number(subscription.interval),
+  //     Number(subscription.rate_per_interval),
+  //     status,
+  //   );
 
-    return withdrawableAmount;
-  }
+  //   return withdrawableAmount;
+  // }
 
   async getSubscriptionsByRecipient(recipient: string): Promise<SubscriptionInfo[]> {
     
@@ -342,68 +342,68 @@ export class SubscriptionModule implements IModule {
     return amount.dividedBy(10 ** 8).toFixed(6).toString();
   }
 
-  _calculateSubscriptionedAmount(
-    withdrawnAmount: number,
-    start_time: number,
-    stop_time: number,
-    currTime: number,
-    pausedAt: number,
-    lastWithdrawTime: number,
-    accPausedTime: number,
-    interval: number,
-    ratePerInterval: number,
-    status: SubscriptionStatus,
-  ): number {
+  // _calculateSubscriptionedAmount(
+  //   withdrawnAmount: number,
+  //   start_time: number,
+  //   stop_time: number,
+  //   currTime: number,
+  //   pausedAt: number,
+  //   lastWithdrawTime: number,
+  //   accPausedTime: number,
+  //   interval: number,
+  //   ratePerInterval: number,
+  //   status: SubscriptionStatus,
+  // ): number {
 
-    let withdrawable = this._calculateWithdrawableAmount(
-      start_time,
-      stop_time,
-      currTime,
-      pausedAt,
-      lastWithdrawTime,
-      accPausedTime,
-      interval,
-      ratePerInterval,
-      status
-    )
-    return withdrawnAmount + Number(this.displayAmount(new BigNumber(Number(withdrawable))));
-  }
+  //   let withdrawable = this._calculateWithdrawableAmount(
+  //     start_time,
+  //     stop_time,
+  //     currTime,
+  //     pausedAt,
+  //     lastWithdrawTime,
+  //     accPausedTime,
+  //     interval,
+  //     ratePerInterval,
+  //     status
+  //   )
+  //   return withdrawnAmount + Number(this.displayAmount(new BigNumber(Number(withdrawable))));
+  // }
 
-  _calculateWithdrawableAmount(
-    start_time: number,
-    stop_time: number,
-    currTime: number,
-    pausedAt: number,
-    lastWithdrawTime: number,
-    accPausedTime: number,
-    interval: number,
-    ratePerInterval: number,
-    status: SubscriptionStatus,
-  ): number {
-    let withdrawal = 0;
-    let timeSpan = BigInt(0)
-    if (currTime <= BigInt(start_time)) {
-      return withdrawal
-    }
+  // _calculateWithdrawableAmount(
+  //   start_time: number,
+  //   stop_time: number,
+  //   currTime: number,
+  //   pausedAt: number,
+  //   lastWithdrawTime: number,
+  //   accPausedTime: number,
+  //   interval: number,
+  //   ratePerInterval: number,
+  //   status: SubscriptionStatus,
+  // ): number {
+  //   let withdrawal = 0;
+  //   let timeSpan = BigInt(0)
+  //   if (currTime <= BigInt(start_time)) {
+  //     return withdrawal
+  //   }
 
-    if (currTime > BigInt(stop_time)) {
-      if (status === SubscriptionStatus.Completed) {
-        timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-      } else {
-        timeSpan = BigInt(stop_time) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-      }
-    } else {
-      if (status === SubscriptionStatus.Unknown) {
-        timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime)
-      } else {
-        timeSpan = BigInt(currTime) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-      }
-    }
+  //   if (currTime > BigInt(stop_time)) {
+  //     if (status === SubscriptionStatus.Completed) {
+  //       timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
+  //     } else {
+  //       timeSpan = BigInt(stop_time) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
+  //     }
+  //   } else {
+  //     if (status === SubscriptionStatus.Unknown) {
+  //       timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime)
+  //     } else {
+  //       timeSpan = BigInt(currTime) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
+  //     }
+  //   }
 
-    let intervalNum = Math.ceil(Number(timeSpan / BigInt(interval) / BigInt(1000)));
-    withdrawal = Number(BigInt(intervalNum) * BigInt(ratePerInterval) / BigInt(1000));
-    return withdrawal;
-  }
+  //   let intervalNum = Math.ceil(Number(timeSpan / BigInt(interval) / BigInt(1000)));
+  //   withdrawal = Number(BigInt(intervalNum) * BigInt(ratePerInterval) / BigInt(1000));
+  //   return withdrawal;
+  // }
 
   _convertrate_typeToSeconds(rate_type: "month" | "day" | "year" | undefined) {
     const intervals = [
