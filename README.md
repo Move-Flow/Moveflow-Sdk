@@ -3,7 +3,7 @@
 Create a project using this example:
 
 ```bash
-yarn add @moveflow/sdk.js
+yarn add @moveflow/sdk-aptos
 ```
 
 ### use sdk
@@ -11,7 +11,6 @@ yarn add @moveflow/sdk.js
 ```
 const sdk = new SDK(Network.TESTNET)
 ``` 
-
 
 ### submit Stream tx
 
@@ -107,6 +106,7 @@ const txid = await SignAndSubmitTransaction(payload)
 
 ```
 
+
 ### query streams 
 
 1. query incoming streams
@@ -123,6 +123,8 @@ const res = await sdk.stream.getIncomingStreams(address);
 const address = `0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180`
 const res = await sdk.stream.getOutgoingStreams(address)
 ```
+
+
 
 
 ## Learn More

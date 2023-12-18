@@ -10,3 +10,5 @@ coverage
 *.log
 
 mock_coin
+
+.yarn
