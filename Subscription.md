@@ -1,6 +1,6 @@
 ### Subscription SDK
 
-Moveflow Subscription SDK is a TypeScript SDK for interacting with Ethereum smart contracts related to subscription management. It provides a set of functions to create, manage, and retrieve subscription details. This README provides an overview of the functions and their use cases.
+Moveflow Subscription SDK is a TypeScript SDK for interacting with Aptos smart contracts related to subscription management. It provides a set of functions to create, manage, and retrieve subscription details. This README provides an overview of the functions and their use cases.
 Installation
 To use this SDK in your app, you'll need to install it via npm or yarn.
 
@@ -14,7 +14,7 @@ yarn add  @moveflow/sdk-aptos
 
 ### Intitialization
 
-To get started, you'll need to initialize the SDK with your Ethereum provider URL and contract information. The following code snippet demonstrates how to do this:
+To get started, you'll need to initialize the SDK with your Aptos provider URL and contract information. The following code snippet demonstrates how to do this:
 
 
 ```
