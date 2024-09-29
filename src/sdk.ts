@@ -33,7 +33,7 @@ export class SDK {
   protected _subscription: SubscriptionModule
 
   protected _networkOptions: SdkOptions['networkOptions']
- 
+
   get resources() {
     return this._resources
   }
@@ -53,7 +53,7 @@ export class SDK {
   get client() {
     return this._client
   }
-  
+
   get coin() {
     return this._coin
   }
@@ -95,20 +95,21 @@ export class SDK {
         StreamModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::stream',
         TransferModule: '0x85e0c7b86bbea605ab495df331042370b81c9abe94a0a7447c719de549545207::Transfer',
 
-        SubscriptionModuleAccount: '0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458', 
+        SubscriptionModuleAccount: '0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458',
         SubscriptionModule: '0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458::subscription',
       },
     }
     let networkOptions = mainnetOptions  // default network
-    
+
     if (network == Network.MAINNET) networkOptions = mainnetOptions
     if (network == Network.TESTNET) networkOptions = testnetOptions
 
     nodeUrl = nodeUrl || (network == Network.MAINNET
-          ? 'https://fullnode.mainnet.aptoslabs.com/v1' 
+          ? 'https://fullnode.mainnet.aptoslabs.com/v1'
           : 'https://testnet.aptoslabs.com');
 
-    const options = { nodeUrl, networkOptions: networkOptions }
+
+          const options = { nodeUrl, networkOptions: networkOptions }
 
     this._networkOptions = options.networkOptions
     this._client = new AptosClient(options.nodeUrl)

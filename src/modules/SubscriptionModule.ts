@@ -1,59 +1,71 @@
-import { SDK } from '../sdk'
-import { IModule } from '../interfaces/IModule'
+import { SDK } from "../sdk";
+import { IModule } from "../interfaces/IModule";
 
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 
-import SubscriptionInfo from '../types/subscriptionInfo'
+import SubscriptionInfo from "../types/subscriptionInfo";
 import { SubscriptionStatus } from "../types/subscriptionStatus";
 
-import { Types } from 'aptos';
+import { composeType } from "../utils";
+import { InputTransactionData, Types } from "@aptos-labs/wallet-adapter-core";
+import { removeDuplicateSubscription } from "../utils/duplicate";
 
+// Define payload types
 export type CreatePayload = {
-
-  recipient: string,
-  deposit_amount: number,
-  start_time: string,
-  stop_time: string,
-  rate_type: "month" | "day" | "year" | undefined,
-  amount_type: "fixed" | undefined,
-  coin_type?: string,
-}
+  recipient: string;
+  deposit_amount: number;
+  start_time: string;
+  stop_time: string;
+  rate_type: "month" | "day" | "year" | undefined;
+  amount_type: "fixed" | undefined;
+  coin_type?: string;
+};
 
 export type DepositPayload = {
-  subscription_id: number,
-  deposit_amount: number,
-  coin_type?: string,
-}
+  subscription_id: number;
+  deposit_amount: number;
+  coin_type?: string;
+};
 
 export type CancelPayload = {
-  subscription_id: number,
-  coin_type?: string,
-}
+  subscription_id: number;
+  coin_type?: string;
+};
 
 export type WithdrawPayload = {
-  withdraw_amount: number,
-  subscription_id: number,
-  coin_type?: string,
-}
+  withdraw_amount: number;
+  subscription_id: number;
+  coin_type?: string;
+};
 
-const AptosCoin = '0x1::aptos_coin::AptosCoin'
-const aptosConfigType = 'subscription::GlobalConfig'
-const aptosSubscriptionType = 'subscription::SubscriptionInfo';
+const AptosCoin = "0x1::aptos_coin::AptosCoin";
+const aptosConfigType = "subscription::GlobalConfig";
+const aptosSubscriptionType = "subscription::SubscriptionInfo";
 
 export class SubscriptionModule implements IModule {
-
-  protected _sdk: SDK
+  protected _sdk: SDK;
 
   get sdk() {
-    return this._sdk
+    return this._sdk;
   }
 
   constructor(sdk: SDK) {
-    this._sdk = sdk
+    this._sdk = sdk;
   }
 
-  create(input: CreatePayload): Types.TransactionPayload_EntryFunctionPayload {
+  // Utility function to wrap SDK payloads into InputTransactionData
+  private wrapTransactionPayload(sdkPayload: any): InputTransactionData {
+    return {
+      data: {
+        function: sdkPayload.function as `${string}::${string}::${string}`,
+        typeArguments: sdkPayload.type_arguments,
+        functionArguments: sdkPayload.arguments,
+      },
+    };
+  }
 
+  // Create method
+  create(input: CreatePayload): InputTransactionData {
     const {
       recipient,
       deposit_amount,
@@ -62,128 +74,99 @@ export class SubscriptionModule implements IModule {
       rate_type,
       amount_type,
       coin_type,
-    } = input
+    } = input;
 
-    const { modules } = this.sdk.networkOptions
+    const { modules } = this.sdk.networkOptions;
+    const functionName = composeType(modules.SubscriptionModule, "create");
 
-    const _type_arguments = [coin_type ?? AptosCoin]
-
-    const _function = `${modules.SubscriptionModule}::subscription::create`;
-
-    const _arguments = [
-      recipient,
-      deposit_amount,
-      start_time.toString(),
-      stop_time.toString(),
-      this._convertrate_typeToSeconds(rate_type),   // interval
-      amount_type === "fixed" ? 10000000 : 0,      // fixed_rate
-    ];
-
-    const transaction: Types.TransactionPayload_EntryFunctionPayload = {
-      type: "entry_function_payload",
-      function: _function,
-      arguments: _arguments,
-      type_arguments: _type_arguments,
+    const sdkPayload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload", // Add this line
+      function: functionName,
+      type_arguments: [coin_type || AptosCoin],
+      arguments: [
+        recipient,
+        deposit_amount,
+        start_time.toString(),
+        stop_time.toString(),
+        this._convertrate_typeToSeconds(rate_type), // interval
+        amount_type === "fixed" ? 10000000 : 0, // fixed_rate
+      ],
     };
 
-    return transaction;
+    // Use the utility method to wrap the payload
+    return this.wrapTransactionPayload(sdkPayload);
   }
 
-  deposit(input: DepositPayload): Types.TransactionPayload_EntryFunctionPayload {
+  deposit(input: DepositPayload): InputTransactionData {
+    const { deposit_amount, subscription_id, coin_type } = input;
 
-    const {
-      deposit_amount,
-      subscription_id,
-      coin_type
-    } = input
+    const { modules } = this.sdk.networkOptions;
+    let functionName = composeType(modules.SubscriptionModule, "deposit");
+    functionName = removeDuplicateSubscription(functionName);
 
-    const { modules } = this.sdk.networkOptions
+    console.log("function name from deposit", functionName);
 
-    const _type_arguments = [coin_type ?? AptosCoin]
+    const sdkPayload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload",
+      function: functionName,
+      type_arguments: [coin_type || AptosCoin],
+      arguments: [deposit_amount.toString(), subscription_id],
+    };
 
-    const _function = `${modules.SubscriptionModule}::subscription::deposit`;
-
-
-    const _arguments = [
-      deposit_amount,
-      subscription_id
-    ]
-
-    const transaction = {
-      type: 'entry_function_payload',
-      function: _function,
-      type_arguments: _type_arguments,
-      arguments: _arguments,
-    }
-
-    return transaction;
+    // Use the utility method to wrap the payload
+    return this.wrapTransactionPayload(sdkPayload);
   }
 
-  cancel(input: CancelPayload): Types.TransactionPayload_EntryFunctionPayload {
-    const {
-      subscription_id,
-      coin_type,
-    } = input
+  cancel(input: CancelPayload): InputTransactionData {
+    const { subscription_id, coin_type } = input;
 
-    const { modules } = this.sdk.networkOptions
+    const { modules } = this.sdk.networkOptions;
+    const functionName = composeType(modules.SubscriptionModule, "cancel");
 
-    const _type_arguments = [coin_type ?? AptosCoin]
+    // Log the function name for debugging
+    console.log("Function name from cancel:", functionName);
 
-    const _function = `${modules.SubscriptionModule}::subscription::deposit`;
+    const sdkPayload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload", // Ensure consistent payload structure
+      function: functionName,
+      type_arguments: [coin_type || AptosCoin],
+      arguments: [subscription_id],
+    };
 
-    const _arguments = [
-      subscription_id
-    ]
-
-    const transaction = {
-      type: 'entry_function_payload',
-      function: _function,
-      type_arguments: _type_arguments,
-      arguments: _arguments,
-    }
-
-    return transaction;
+    // Use the utility method to wrap the payload
+    return this.wrapTransactionPayload(sdkPayload);
   }
 
-  withdraw(input: WithdrawPayload): Types.TransactionPayload_EntryFunctionPayload {
-    const {
-      withdraw_amount,
-      subscription_id,
-      coin_type,
-    } = input
+  withdraw(input: WithdrawPayload): InputTransactionData {
+    const { withdraw_amount, subscription_id, coin_type } = input;
 
-    const { modules } = this.sdk.networkOptions
+    const { modules } = this.sdk.networkOptions;
+    const functionName = composeType(modules.SubscriptionModule, "withdraw");
 
-    const _type_arguments = [coin_type ?? AptosCoin]
+    // Log the function name for debugging
+    console.log("Function name from withdraw:", functionName);
 
-    const _function = `${modules.SubscriptionModule}::subscription::withdraw`;
+    const sdkPayload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload", // Ensure consistent payload structure
+      function: functionName,
+      type_arguments: [coin_type || AptosCoin],
+      arguments: [withdraw_amount.toString(), subscription_id],
+    };
 
-    const _arguments = [
-      withdraw_amount,
-      subscription_id,
-    ]
-
-    const transaction = {
-      type: 'entry_function_payload',
-      function: _function,
-      type_arguments: _type_arguments,
-      arguments: _arguments,
-    }
-
-    return transaction;
+    // Use the utility method to wrap the payload
+    return this.wrapTransactionPayload(sdkPayload);
   }
 
   async getSubscription(subscriptionId: number): Promise<SubscriptionInfo> {
-
-
     const address = this.sdk.networkOptions.modules.SubscriptionModuleAccount;
-    
+
     const resources = await this._sdk.client.getAccountResources(address);
 
-    const subscriptionGlobalConfig = resources.find((r) => r.type.includes(aptosConfigType))!;
-
+    const subscriptionGlobalConfig = resources.find((r) =>
+      r.type.includes(aptosConfigType)
+    )!;
     // @ts-ignore
-    const inner = subscriptionGlobalConfig.data.subscription_store.inner;   // subscriptions_store.inner.handle;
+    const inner = subscriptionGlobalConfig.data.subscription_store.inner; // subscriptions_store.inner.handle;
 
     const tableItemRequest = {
       key_type: "u64",
@@ -191,141 +174,135 @@ export class SubscriptionModule implements IModule {
       key: subscriptionId.toString(),
     };
 
-    const subscription = await this._sdk.client.getTableItem(inner.handle, tableItemRequest);
+    const subscription = await this._sdk.client.getTableItem(
+      inner.handle,
+      tableItemRequest
+    );
 
-    const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
-    const subscriptionStatus = this._getSubscriptionStatus(subscription, currTime);
+    const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()));
+    const subscriptionStatus = this._getSubscriptionStatus(
+      subscription,
+      currTime
+    );
 
-    let subscriptionInfo = subscription
-    subscriptionInfo.status = subscriptionStatus
+    let subscriptionInfo = subscription;
+    subscriptionInfo.status = subscriptionStatus;
 
     return subscriptionInfo;
   }
 
-  // async withdrawable(subscriptionId: string): Promise<number> {
-
-  //   const currTime = BigInt(Date.parse(new Date().toISOString().valueOf()))
-
-  //   const address = this.sdk.networkOptions.modules.DeployerAddress;
-
-  //   const resources = await this._sdk.client.getAccountResources(address);
-  //   const resGlConf = resources.find((r) => r.type.includes(aptosConfigType))!;
-  //   // @ts-ignore
-  //   const inSubscriptionHandle = resGlConf.data.subscriptions_store.inner.handle!;
-
-  //   const tbReqSubscriptionInd = {
-  //     key_type: "u64",
-  //     value_type: `${address}::${aptosSubscriptionType}`,
-  //     key: subscriptionId,
-  //   };
-
-  //   const subscription = await this._sdk.client.getTableItem(inSubscriptionHandle, tbReqSubscriptionInd);
-
-  //   const status = this. _getSubscriptionStatus(subscription, currTime);
-
-  //   const withdrawableAmount = this._calculateWithdrawableAmount(
-  //     Number(subscription.start_time) * 1000,
-  //     Number(subscription.stop_time) * 1000,
-  //     Number(currTime),
-  //     Number(subscription.pauseInfo.pause_at) * 1000,
-  //     Number(subscription.last_withdraw_time) * 1000,
-  //     Number(subscription.pauseInfo.acc_paused_time) * 1000,
-  //     Number(subscription.interval),
-  //     Number(subscription.rate_per_interval),
-  //     status,
-  //   );
-
-  //   return withdrawableAmount;
-  // }
-
-  async getSubscriptionsByRecipient(recipient: string): Promise<SubscriptionInfo[]> {
-    
+  async getSubscriptionsByRecipient(
+    recipient: string
+  ): Promise<SubscriptionInfo[]> {
     const address = this.sdk.networkOptions.modules.SubscriptionModuleAccount;
-    
-    const resources = await this._sdk.client.getAccountResources(address);
-
-    const subscriptionGlobalConfig = resources.find((r) => r.type.includes(aptosConfigType))!;
-
     const event_handle = `${address}::${aptosConfigType}`;
-
     const eventField = "subscription_events";
 
-    const eventsAll = await this._sdk.client.getEventsByEventHandle(
-      address,
-      event_handle,
-      eventField,
-      {
-        start: 0,
-        limit: 1000,
-      }
-    );
-
-    const eventsRecv = eventsAll.filter(event => event.data.recipient! === recipient);
-    if (eventsRecv.length === 0) return [];
-
-    const subscriptionIds = Array.from(new Set(eventsRecv.map(event => event.data.id!)));
-    console.log('subscriptionIds:', subscriptionIds)
-    // @ts-ignore
-    const inSubscriptionHandle = subscriptionGlobalConfig.data.subscription_store.inner.handle!;
     let subscriptions: SubscriptionInfo[] = [];
-    for (const subscriptionId of subscriptionIds) {
-      const subscription =  await this.getSubscription(subscriptionId)
-      subscriptions.push(subscription)
+    let start = 0;
+    const limit = 100;
+    let hasMore = true;
+
+    while (hasMore) {
+      const eventsChunk = await this._sdk.client.getEventsByEventHandle(
+        address,
+        event_handle,
+        eventField,
+        {
+          start,
+          limit,
+        }
+      );
+
+      const eventsRecv = eventsChunk.filter(
+        (event) => event.data.recipient === recipient
+      );
+
+      for (const event of eventsRecv) {
+        try {
+          const subscription = await this.getSubscription(event.data.id);
+          subscriptions.push(subscription);
+        } catch (error) {
+          console.error(`Error fetching subscription ${event.data.id}:`, error);
+        }
+      }
+
+      start += limit;
+      hasMore = eventsChunk.length === limit;
     }
+
+    subscriptions.sort((a, b) => b.create_at - a.create_at);
+
+    // // Log the newest subscription
+    // if (subscriptions.length > 0) {
+    //   console.log("Newest subscription:", subscriptions[0]);
+    // } else {
+    //   console.log("No subscriptions found for this sender.");
+    // }
 
     return subscriptions;
   }
 
   async getSubscriptionsBySender(sender: string): Promise<SubscriptionInfo[]> {
-
-        
     const address = this.sdk.networkOptions.modules.SubscriptionModuleAccount;
-    
-    const resources = await this._sdk.client.getAccountResources(address);
-
-    const subscriptionGlobalConfig = resources.find((r) => r.type.includes(aptosConfigType))!;
-
     const event_handle = `${address}::${aptosConfigType}`;
-
     const eventField = "subscription_events";
 
-    const eventsAll = await this._sdk.client.getEventsByEventHandle(
-      address,
-      event_handle,
-      eventField,
-      {
-        start: 0,
-        limit: 1000,
-      }
-    );
-
-    const eventsRecv = eventsAll.filter(event => event.data.sender! === sender);
-    if (eventsRecv.length === 0) return [];
-
-    const subscriptionIds = Array.from(new Set(eventsRecv.map(event => event.data.id!)));
-    // @ts-ignore
-    const inSubscriptionHandle = subscriptionGlobalConfig.data.subscription_store.inner.handle!;
     let subscriptions: SubscriptionInfo[] = [];
-    for (const subscriptionId of subscriptionIds) {
-      const subscription =  await this.getSubscription(subscriptionId)
-      subscriptions.push(subscription)
+    let start = 0;
+    const limit = 100;
+    let hasMore = true;
+
+    while (hasMore) {
+      const eventsChunk = await this._sdk.client.getEventsByEventHandle(
+        address,
+        event_handle,
+        eventField,
+        {
+          start,
+          limit,
+        }
+      );
+
+      const eventsSent = eventsChunk.filter(
+        (event) => event.data.sender === sender
+      );
+
+      for (const event of eventsSent) {
+        try {
+          const subscription = await this.getSubscription(event.data.id);
+          subscriptions.push(subscription);
+        } catch (error) {
+          console.error(`Error fetching subscription ${event.data.id}:`, error);
+        }
+      }
+
+      start += limit;
+      hasMore = eventsChunk.length === limit;
     }
 
-    console.log('subscriptions length:', subscriptions.length)
+    // Sort subscriptions by creation time, newest first
+    subscriptions.sort((a, b) => b.create_at - a.create_at);
 
+    // // Log the newest subscription
+    // if (subscriptions.length > 0) {
+    //   console.log("Newest subscription:", subscriptions[0]);
+    // } else {
+    //   console.log("No subscriptions found for this sender.");
+    // }
 
     return subscriptions;
-
   }
 
   // async _getEvents(params: any): Promise<any> {
 
-    
-
   //   return eventsAll;
   // }
 
-  _getSubscriptionStatus(subscription: any, currTime: bigint): SubscriptionStatus {
+  _getSubscriptionStatus(
+    subscription: any,
+    currTime: bigint
+  ): SubscriptionStatus {
     if (currTime < BigInt(subscription.start_time) * BigInt(1000)) {
       return SubscriptionStatus.Scheduled;
     }
@@ -339,71 +316,11 @@ export class SubscriptionModule implements IModule {
   }
 
   displayAmount(amount: BigNumber): string {
-    return amount.dividedBy(10 ** 8).toFixed(6).toString();
+    return amount
+      .dividedBy(10 ** 8)
+      .toFixed(6)
+      .toString();
   }
-
-  // _calculateSubscriptionedAmount(
-  //   withdrawnAmount: number,
-  //   start_time: number,
-  //   stop_time: number,
-  //   currTime: number,
-  //   pausedAt: number,
-  //   lastWithdrawTime: number,
-  //   accPausedTime: number,
-  //   interval: number,
-  //   ratePerInterval: number,
-  //   status: SubscriptionStatus,
-  // ): number {
-
-  //   let withdrawable = this._calculateWithdrawableAmount(
-  //     start_time,
-  //     stop_time,
-  //     currTime,
-  //     pausedAt,
-  //     lastWithdrawTime,
-  //     accPausedTime,
-  //     interval,
-  //     ratePerInterval,
-  //     status
-  //   )
-  //   return withdrawnAmount + Number(this.displayAmount(new BigNumber(Number(withdrawable))));
-  // }
-
-  // _calculateWithdrawableAmount(
-  //   start_time: number,
-  //   stop_time: number,
-  //   currTime: number,
-  //   pausedAt: number,
-  //   lastWithdrawTime: number,
-  //   accPausedTime: number,
-  //   interval: number,
-  //   ratePerInterval: number,
-  //   status: SubscriptionStatus,
-  // ): number {
-  //   let withdrawal = 0;
-  //   let timeSpan = BigInt(0)
-  //   if (currTime <= BigInt(start_time)) {
-  //     return withdrawal
-  //   }
-
-  //   if (currTime > BigInt(stop_time)) {
-  //     if (status === SubscriptionStatus.Completed) {
-  //       timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-  //     } else {
-  //       timeSpan = BigInt(stop_time) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-  //     }
-  //   } else {
-  //     if (status === SubscriptionStatus.Unknown) {
-  //       timeSpan = BigInt(pausedAt) - BigInt(lastWithdrawTime) - BigInt(accPausedTime)
-  //     } else {
-  //       timeSpan = BigInt(currTime) - BigInt(lastWithdrawTime) - BigInt(accPausedTime);
-  //     }
-  //   }
-
-  //   let intervalNum = Math.ceil(Number(timeSpan / BigInt(interval) / BigInt(1000)));
-  //   withdrawal = Number(BigInt(intervalNum) * BigInt(ratePerInterval) / BigInt(1000));
-  //   return withdrawal;
-  // }
 
   _convertrate_typeToSeconds(rate_type: "month" | "day" | "year" | undefined) {
     const intervals = [
@@ -429,12 +346,10 @@ export class SubscriptionModule implements IModule {
       return selectedInterval.value / 1000; // Convert milliseconds to seconds
     }
     return 0;
-  };
+  }
 
   // create
   // cancel
   // deposit
   // withdraw
-
 }
-

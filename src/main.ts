@@ -1,3 +1,4 @@
+
 import { SDK } from './sdk'
 
 export * from './sdk'
@@ -5,6 +6,7 @@ export * from './sdk'
 export * as Resources from './modules/ResourcesModule'
 
 export * as Stream from './modules/StreamModule'
+export * as Subscription from './modules/SubscriptionModule'
 export * as BatchCall from './modules/TransferModule'
 
 export * as Utils from './utils'
