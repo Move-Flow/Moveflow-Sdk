@@ -3,14 +3,14 @@
 Create a project using this example:
 
 ```bash
-yarn add @moveflow/sdk-aptos
+yarn add @moveflow/sdk.js
 ```
 
 ### use sdk
 
 ```
 const sdk = new SDK(Network.TESTNET)
-``` 
+```
 
 ### submit Stream tx
 
@@ -35,30 +35,31 @@ const sdk = new SDK(Network.TESTNET)
 
     const txid = await SignAndSubmitTransaction(payload)
     ```
-2. batch create streams
+
+2.  batch create streams
+
     ```javascript
     const batchCreate = async () => {
-        const start_time = Math.floor(Date.now() / 1000).toString();
-        const stop_time = Math.floor(Date.now() / 1000 + 60 * 60 * 24).toString();
+      const start_time = Math.floor(Date.now() / 1000).toString();
+      const stop_time = Math.floor(Date.now() / 1000 + 60 * 60 * 24).toString();
 
-        const payload = sdk.stream.batchCreate({
-            recipientAddrs: [
-                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180',
-                '0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180'
-            ],
-            depositAmounts: [0.1, 0.2],
-            startTime: start_time,
-            stopTime: stop_time,
-            name: 'batch_create_0x2',
-            remark: 'batch_create_0x2',
-            interval: 1000,
-        });
-        const txid = await SignAndSubmitTransaction(payload);
-    }
-
+      const payload = sdk.stream.batchCreate({
+        recipientAddrs: [
+          "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180",
+          "0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180",
+        ],
+        depositAmounts: [0.1, 0.2],
+        startTime: start_time,
+        stopTime: stop_time,
+        name: "batch_create_0x2",
+        remark: "batch_create_0x2",
+        interval: 1000,
+      });
+      const txid = await SignAndSubmitTransaction(payload);
+    };
     ```
 
-3. pause a stream
+3.  pause a stream
 
 ```
 const payload = sdk.stream.pause({
@@ -82,13 +83,12 @@ const txid = await SignAndSubmitTransaction(payload)
 
 ```
 
-5. close a stream 
+5. close a stream
 
 ```
     const payload = sdk.stream.close({ id: 29 })
     const txid = await SignAndSubmitTransaction(payload)
-````
-
+```
 
 6. extend a stream
 
@@ -106,10 +106,10 @@ const txid = await SignAndSubmitTransaction(payload)
 
 ```
 
-
-### query streams 
+### query streams
 
 1. query incoming streams
+
 ```
 const address = `0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180`
 const res = await sdk.stream.getIncomingStreams(address);
@@ -123,9 +123,6 @@ const res = await sdk.stream.getIncomingStreams(address);
 const address = `0x20f0cbe21cb340fe56500e0889cad03f8a9e54a33e3c4acfc24ce2bdfabc4180`
 const res = await sdk.stream.getOutgoingStreams(address)
 ```
-
-
-
 
 ## Learn More
 

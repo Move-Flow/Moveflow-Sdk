@@ -5,17 +5,12 @@ Installation
 To use this SDK in your app, you'll need to install it via npm or yarn.
 
 ```
-npm install --save  @moveflow/sdk-aptos
+npm install --save  @moveflow/sdk.js
 
 or
 
-yarn add  @moveflow/sdk-aptos
+yarn add  @moveflow/sdk.js
 ```
-
-### Intitialization
-
-To get started, you'll need to initialize the SDK with your Ethereum provider URL and contract information. The following code snippet demonstrates how to do this:
-
 
 ```
 import { AptosAccount, Network } from "aptos";
@@ -26,9 +21,10 @@ const { subscription } = new SDK(Network.TESTNET)
 
 ```
 
-
 ### Write Operation
+
 #### Create Subscription
+
 This method allows users to create a subscription contract with various parameters, while performing validation checks on the input data. It ensures that the provided data is valid and that the user's balance is sufficient to create the subscription.
 
 ```
@@ -45,6 +41,7 @@ const output = subscription.create(_input);
 ```
 
 CreatePayload is the input data for creating the subscription. Include fields:
+
 - recipient (string): The recipient's address for the subscription.
 - deposit (number): The deposit amount for the subscription.
 - coinType (string): The token address of the token for the subscription, the default is aptos.
@@ -54,6 +51,7 @@ CreatePayload is the input data for creating the subscription. Include fields:
 - fixedRate (string): The fixed rate for the subscription.
 
 #### Deposit Funds from sender
+
 This method allows the sender to deposit funds to a specific subscription, performing validation checks on the subscription ID and deposit amount. It also checks if the sender's balance is sufficient for the deposit.
 
 ```
@@ -71,6 +69,7 @@ const depositeFromSender = async (input: DepositFromSenderInput): Promise<boolea
 ```
 
 ##### Example usage:
+
 ```
 
 const depositData = {
@@ -85,12 +84,14 @@ try {
 }
 
 ```
+
 DepositFromSenderInput is the input data for depositing funds. Include fields:
+
 - subscriptionId (number): The ID of the subscription to deposit to.
 - amount (number): The amount to deposit to the subscription.
 
-
 #### Withdraw Funds from subscription
+
 This method initiates a withdrawal from the recipient's side of the subscription. It validates the subscription ID and withdrawal amount, ensuring they are valid and positive.
 
 ```
@@ -107,8 +108,8 @@ const withdrawFromRecipient = async (input: WithdrawPayload): Promise<boolean> =
 
 ```
 
-
 ##### Example usage:
+
 ```
 const _withdrawInput: WithdrawPayload = {
     subscription_id: 22,        // ID of the subscription to withdraw from
@@ -124,10 +125,12 @@ try {
 ```
 
 WithdrawPayload is the input data for withdrawing funds. Include fields:
+
 - subscriptionId (number): The ID of the subscription to withdraw tokens from.
 - amount (number): The amount of tokens to withdraw.
 
-####  Cancel a Subscription
+#### Cancel a Subscription
+
 This method allows the sender or recipient to cancel a subscription. Before canceling a subscription, the recipient must have completed all withdrawals. After canceling the subscription, any remaining funds will be refunded to the sender.
 
 ```
@@ -158,20 +161,24 @@ try {
 
 - subscriptionId(number): subscriptionId is the only input field. The ID of the subscription to cancel.
 
-
-### Query Subscription API 
+### Query Subscription API
 
 Query subscription API
+
 #### List subscriptions of the specific sender
+
 The API list subscriptions created by a specific sender.
-const senderSubscriptionData = await subscription.getSubscriptionsBySender(_sender);
+const senderSubscriptionData = await subscription.getSubscriptionsBySender(\_sender);
 const subscriptions = senderSubscriptionData.subscriptionLists;
 The input parameters for list subscriptions created by a specific sender include:
+
 - sender: the address of sender.
 
 #### List subscription of the specific recipient
+
 The API list subscriptions received by a specific recipient. The query API supports paginate.
 const recipientSubscriptionData = await subscription.getSubscriptionsByRecipient("0xRecipientAddress");
 
 The input parameters for list subscriptions received by a specific recipient include:
+
 - recipient: address of recipient.

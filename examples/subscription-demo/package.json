@@ -13,7 +13,7 @@
     "@aptos-labs/wallet-adapter-core": "^3.3.0",
     "@aptos-labs/wallet-adapter-react": "^3.5.1",
     "@martianwallet/aptos-wallet-adapter": "^0.0.5",
-    "@moveflow/sdk-aptos": "file:../../moveflow-sdk-aptos-1.1.8.tgz",
+    "@moveflow/sdk.js": "file:../../moveflow-sdk.js-1.1.8.tgz",
     "aptos": "^1.21.0",
     "next": "14.2.13",
     "petra-plugin-wallet-adapter": "^0.4.5",

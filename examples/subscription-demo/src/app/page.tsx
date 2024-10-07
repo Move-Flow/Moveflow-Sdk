@@ -8,9 +8,9 @@ import {
   useWallet,
 } from "@aptos-labs/wallet-adapter-react";
 import { WalletReadyState } from "@aptos-labs/wallet-adapter-core";
-import SDK from "@moveflow/sdk-aptos";
+import SDK from "@moveflow/sdk.js";
 import { useCallback } from "react";
-import SubscriptionInfo from "@moveflow/sdk-aptos/dist/tsc/types/subscriptionInfo";
+import SubscriptionInfo from "@moveflow/sdk.js/dist/tsc/types/subscriptionInfo";
 type SDKInstance = SDK | null;
 const testnet = "https://testnet.aptoslabs.com";
 
